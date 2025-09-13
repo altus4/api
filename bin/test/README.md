@@ -1,4 +1,4 @@
-# 🔍 API Contract Testing Suite
+# API Contract Testing Suite
 
 This directory contains comprehensive API testing scripts that validate the Altus 4 API against its OpenAPI 3.0 specification.
 
@@ -16,14 +16,14 @@ A comprehensive bash script that:
 
 ## Features
 
-- ✅ **Complete endpoint coverage** - Tests all 25+ API endpoints
-- ✅ **Authentication testing** - Validates JWT and API key authentication flows
-- ✅ **Input validation** - Tests field validation, length limits, and data types
-- ✅ **Error handling** - Verifies proper HTTP status codes and error responses
-- ✅ **Schema validation** - Ensures responses match OpenAPI specifications
-- ✅ **Edge case testing** - Tests malformed requests, large payloads, invalid auth
-- ✅ **Comprehensive reporting** - HTML dashboard and JSON results
-- ✅ **Automated setup** - Handles database setup, test data creation, and cleanup
+- **Complete endpoint coverage** - Tests all 25+ API endpoints
+- **Authentication testing** - Validates JWT and API key authentication flows
+- **Input validation** - Tests field validation, length limits, and data types
+- **Error handling** - Verifies proper HTTP status codes and error responses
+- **Schema validation** - Ensures responses match OpenAPI specifications
+- **Edge case testing** - Tests malformed requests, large payloads, invalid auth
+- **Comprehensive reporting** - HTML dashboard and JSON results
+- **Automated setup** - Handles database setup, test data creation, and cleanup
 
 ## Usage
 
@@ -59,7 +59,7 @@ API_BASE_URL=http://localhost:3000 ./bin/test/api-contract-test.sh
 
 The script systematically tests:
 
-### 🔐 Authentication Endpoints
+### Authentication Endpoints
 
 - `POST /api/v1/auth/register` - User registration (valid/invalid/duplicate)
 - `POST /api/v1/auth/login` - User login (valid/invalid credentials)
@@ -70,7 +70,7 @@ The script systematically tests:
 - `POST /api/v1/auth/logout` - User logout
 - `DELETE /api/v1/auth/account` - Account deletion
 
-### 🗄️ Database Endpoints
+### Database Endpoints
 
 - `GET /api/v1/databases` - List database connections
 - `POST /api/v1/databases` - Add new database connection
@@ -81,7 +81,7 @@ The script systematically tests:
 - `GET /api/v1/databases/{id}/schema` - Discover schema
 - `GET /api/v1/databases/status` - Connection status
 
-### 🔑 API Key Endpoints
+### API Key Endpoints
 
 - `POST /api/v1/keys` - Create API key (valid/invalid data)
 - `GET /api/v1/keys` - List API keys
@@ -90,7 +90,7 @@ The script systematically tests:
 - `POST /api/v1/keys/{id}/regenerate` - Regenerate key
 - `GET /api/v1/keys/{id}/usage` - Get usage statistics
 
-### 🔍 Search Endpoints
+### Search Endpoints
 
 - `POST /api/v1/search` - Execute search (natural/boolean/semantic modes)
 - `GET /api/v1/search/suggestions` - Get search suggestions
@@ -98,7 +98,7 @@ The script systematically tests:
 - `GET /api/v1/search/trends` - Get search trends
 - `GET /api/v1/search/history` - Get search history
 
-### 📊 Analytics Endpoints
+### Analytics Endpoints
 
 - `GET /api/v1/analytics/search-trends` - Search trend analysis
 - `GET /api/v1/analytics/performance` - Performance metrics
@@ -108,7 +108,7 @@ The script systematically tests:
 - `GET /api/v1/analytics/dashboard` - Dashboard data
 - `GET /api/v1/analytics/admin/*` - Admin-only analytics
 
-### 🎯 Edge Cases & Error Conditions
+### Edge Cases & Error Conditions
 
 - **404 handling** - Non-existent endpoints
 - **Malformed JSON** - Invalid request bodies
@@ -287,7 +287,7 @@ This shows:
 
 ```bash
 test_new_endpoint() {
-    print_header "🆕 TESTING NEW ENDPOINTS"
+    print_header "TESTING NEW ENDPOINTS"
 
     local response
     response=$(make_request "GET" "/api/v1/new-endpoint" "Bearer ${TEST_TOKENS["admin"]}")

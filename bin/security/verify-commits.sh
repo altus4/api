@@ -11,19 +11,19 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 print_success() {
-    echo -e "${GREEN}✅ $1${NC}"
+    echo -e "${GREEN}Success: $1${NC}"
 }
 
 print_error() {
-    echo -e "${RED}❌ $1${NC}"
+    echo -e "${RED}Error: $1${NC}"
 }
 
 print_warning() {
-    echo -e "${YELLOW}⚠️  $1${NC}"
+    echo -e "${YELLOW}Warning: $1${NC}"
 }
 
 print_info() {
-    echo -e "${BLUE}ℹ️  $1${NC}"
+    echo -e "${BLUE}Info: $1${NC}"
 }
 
 print_header() {
@@ -35,7 +35,7 @@ print_header() {
 # Default to checking last 10 commits
 COUNT=${1:-10}
 
-print_header "🔍 ALTUS 4 COMMIT VERIFICATION REPORT"
+print_header "ALTUS 4 COMMIT VERIFICATION REPORT"
 echo ""
 print_info "Analyzing last $COUNT commits..."
 echo ""
@@ -54,7 +54,7 @@ invalid_format=0
 declare -a unsigned_list
 declare -a invalid_format_list
 
-print_header "📋 DETAILED ANALYSIS"
+print_header "DETAILED ANALYSIS"
 
 for commit in $COMMITS; do
     total_commits=$((total_commits + 1))
@@ -67,9 +67,9 @@ for commit in $COMMITS; do
 
     echo ""
     echo -e "${BLUE}Commit #$total_commits: $commit_short${NC}"
-    echo "  📅 Date: $commit_date"
-    echo "  👤 Author: $commit_author"
-    echo "  💬 Message: $commit_msg"
+    echo "  Date: $commit_date"
+    echo "  Author: $commit_author"
+    echo "  Message: $commit_msg"
 
     # Check GPG signature
     if git verify-commit "$commit" >/dev/null 2>&1; then
@@ -94,11 +94,11 @@ for commit in $COMMITS; do
 done
 
 echo ""
-print_header "📊 SUMMARY REPORT"
+print_header "SUMMARY REPORT"
 echo ""
 
 # Display summary
-echo "📈 Total Commits Analyzed: $total_commits"
+echo "Total Commits Analyzed: $total_commits"
 echo ""
 
 # GPG Signing Summary
@@ -124,7 +124,7 @@ if [ $unsigned_commits -gt 0 ]; then
     echo ""
     print_warning "UNSIGNED COMMITS:"
     for commit in "${unsigned_list[@]}"; do
-        echo "  🔓 $commit"
+        echo "  $commit"
     done
 fi
 
@@ -132,12 +132,12 @@ if [ $invalid_format -gt 0 ]; then
     echo ""
     print_warning "INVALID COMMIT FORMATS:"
     for commit in "${invalid_format_list[@]}"; do
-        echo "  📝 $commit"
+        echo "  $commit"
     done
 fi
 
 echo ""
-print_header "🔧 RECOMMENDATIONS"
+print_header "RECOMMENDATIONS"
 
 if [ $unsigned_commits -gt 0 ]; then
     echo ""
@@ -163,15 +163,15 @@ fi
 
 echo ""
 if [ $unsigned_commits -eq 0 ] && [ $invalid_format -eq 0 ]; then
-    print_success "🎉 All commits are properly signed and formatted!"
+    print_success "All commits are properly signed and formatted!"
     echo "  Your commit history meets all verification standards."
 else
-    print_warning "⚠️  Some commits need attention."
+    print_warning "Some commits need attention."
     echo "  Consider fixing these issues before pushing to main."
 fi
 
 echo ""
-print_header "🔍 VERIFICATION COMPLETE"
+print_header "VERIFICATION COMPLETE"
 echo ""
 
 # Exit with error code if there are issues

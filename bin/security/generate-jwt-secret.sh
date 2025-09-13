@@ -44,4 +44,4 @@ else
     echo "JWT_SECRET added to $ENV_FILE"
 fi
 
-echo "✅ JWT secret configuration complete!"
+echo "Success: JWT secret configuration complete!"

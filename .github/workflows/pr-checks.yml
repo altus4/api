@@ -34,13 +34,13 @@ jobs:
             let label = '';
 
             if (changes > 500) {
-              message = '⚠️ This PR is quite large (500+ lines changed). Consider breaking it down into smaller PRs for easier review.';
+              message = 'Warning: This PR is quite large (500+ lines changed). Consider breaking it down into smaller PRs for easier review.';
               label = 'large-pr';
             } else if (changes > 200) {
-              message = 'ℹ️ This PR is moderately sized (200+ lines changed). Please ensure adequate testing.';
+              message = 'Info: This PR is moderately sized (200+ lines changed). Please ensure adequate testing.';
               label = 'medium-pr';
             } else {
-              message = '✅ This PR is appropriately sized for review.';
+              message = 'This PR is appropriately sized for review.';
               label = 'small-pr';
             }
 
@@ -93,7 +93,7 @@ jobs:
             if (!conventionalCommitRegex.test(title)) {
               const comment = `## PR Title Format
 
-              ⚠️ **PR title should follow conventional commit format**
+              **PR title should follow conventional commit format**
 
               **Current title:** \`${title}\`
 

@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "🔍 Running comprehensive pre-commit checks..."
+echo "Running comprehensive pre-commit checks..."
 
 # Track start time
 START_TIME=$(date +%s)
@@ -17,15 +17,15 @@ print_status() {
 }
 
 print_success() {
-    echo "${GREEN}✅ $1${NC}"
+    echo "${GREEN}SUCCESS: $1${NC}"
 }
 
 print_warning() {
-    echo "${YELLOW}⚠️  $1${NC}"
+    echo "${YELLOW}WARNING: $1${NC}"
 }
 
 print_error() {
-    echo "${RED}❌ $1${NC}"
+    echo "${RED}ERROR: $1${NC}"
 }
 
 # Exit on any error (we'll selectively override for optional steps)
@@ -33,7 +33,7 @@ set -e
 
 # Allow developers to skip all pre-commit checks when needed
 if [ "$SKIP_PRECOMMIT_ALL" = "1" ]; then
-  echo "⏭️  SKIP_PRECOMMIT_ALL=1 set — skipping all checks"
+  echo "SKIP_PRECOMMIT_ALL=1 set — skipping all checks"
   exit 0
 fi
 
@@ -41,7 +41,7 @@ print_status "1. Security & Dependencies Audit"
 if [ "$SKIP_PRECOMMIT_AUDIT" = "1" ]; then
   print_warning "Skipping npm audit (SKIP_PRECOMMIT_AUDIT=1)"
 else
-  echo "🔒 Checking for security vulnerabilities..."
+  echo "Checking for security vulnerabilities..."
   # Skip audit gracefully when offline
   if npm ping >/dev/null 2>&1; then
     if npm audit --audit-level=high --production; then
@@ -60,14 +60,14 @@ else
 fi
 
 print_status "2. Lint and Format Staged Files"
-echo "📝 Formatting and linting staged files..."
+echo "Formatting and linting staged files..."
 npx lint-staged
 
 print_status "3. TypeScript Type Checking"
 if [ "$SKIP_PRECOMMIT_CHECK" = "1" ]; then
   print_warning "Skipping typecheck/lint/format check (SKIP_PRECOMMIT_CHECK=1)"
 else
-  echo "🔍 Running TypeScript type checking..."
+  echo "Running TypeScript type checking..."
   npm run check
 fi
 
@@ -75,7 +75,7 @@ print_status "4. Build Verification"
 if [ "$SKIP_PRECOMMIT_BUILD" = "1" ]; then
   print_warning "Skipping build (SKIP_PRECOMMIT_BUILD=1)"
 else
-  echo "🏗️  Building project to ensure it compiles..."
+  echo "Building project to ensure it compiles..."
   npm run build
 fi
 
@@ -83,12 +83,12 @@ print_status "5. Test Suite"
 if [ "$SKIP_PRECOMMIT_TESTS" = "1" ]; then
   print_warning "Skipping tests (SKIP_PRECOMMIT_TESTS=1)"
 else
-  echo "🧪 Running comprehensive test suite..."
+  echo "Running comprehensive test suite..."
   npm test
 fi
 
 print_status "6. Package Integrity"
-echo "📦 Verifying package.json integrity..."
+echo "Verifying package.json integrity..."
 if npm ls --depth=0 > /dev/null 2>&1; then
     print_success "Package dependencies are consistent"
 else
@@ -96,7 +96,7 @@ else
 fi
 
 print_status "7. Git Hooks Validation"
-echo "🪝 Verifying Git hooks are properly configured..."
+echo "Verifying Git hooks are properly configured..."
 if [ -f .husky/commit-msg ] && [ -x .husky/commit-msg ]; then
     print_success "Commit message hooks configured"
 else
@@ -120,6 +120,6 @@ END_TIME=$(date +%s)
 DURATION=$((END_TIME - START_TIME))
 
 echo ""
-print_success "All pre-commit checks passed! ⚡ Completed in ${DURATION}s"
+print_success "All pre-commit checks passed! Completed in ${DURATION}s"
 echo ""
-echo "🚀 Ready to commit with confidence!"
+echo "Ready to commit with confidence!"

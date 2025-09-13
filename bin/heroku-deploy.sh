@@ -177,7 +177,7 @@ main() {
         run_migrations
         open_app
         
-        print_success "🎉 Altus4 Core has been successfully deployed to Heroku!"
+        print_success "Altus4 Core has been successfully deployed to Heroku!"
         print_status "Your app is available at: $(heroku info -s | grep web_url | cut -d= -f2)"
     fi
 }

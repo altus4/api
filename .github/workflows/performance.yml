@@ -85,11 +85,11 @@ jobs:
 
               | Metric | Value | Status |
               |--------|-------|--------|
-              | Average Response Time | ${results.avgResponseTime}ms | ${results.avgResponseTime < 100 ? '✅' : '⚠️'} |
-              | Throughput | ${results.throughput} req/s | ${results.throughput > 500 ? '✅' : '⚠️'} |
-              | Memory Usage | ${results.memoryUsage}MB | ${results.memoryUsage < 512 ? '✅' : '⚠️'} |
+              | Average Response Time | ${results.avgResponseTime}ms | ${results.avgResponseTime < 100 ? 'PASS' : 'WARN'} |
+              | Throughput | ${results.throughput} req/s | ${results.throughput > 500 ? 'PASS' : 'WARN'} |
+              | Memory Usage | ${results.memoryUsage}MB | ${results.memoryUsage < 512 ? 'PASS' : 'WARN'} |
 
-              ${results.avgResponseTime > 200 ? '⚠️ **Warning**: Response times are higher than expected' : ''}
+              ${results.avgResponseTime > 200 ? '**Warning**: Response times are higher than expected' : ''}
               `;
 
               try {

@@ -5,15 +5,15 @@
 
 set -e
 
-echo "🛑 Stopping Altus4 Development Environment..."
+echo "Stopping Altus4 Development Environment..."
 
 # Navigate to script directory
 cd "$(dirname "$0")"
 
 # Stop services
-echo "📦 Stopping Docker services..."
+echo "Stopping Docker services..."
 docker-compose down
 
-echo "✅ All services stopped!"
+echo "Success: All services stopped!"
 echo ""
-echo "💡 To start services again, run: ./script/local/start.sh"
+echo "Info: To start services again, run: ./script/local/start.sh"

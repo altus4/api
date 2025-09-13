@@ -783,7 +783,7 @@ describe('EncryptionUtil', () => {
       // Re-import EncryptionUtil to use real crypto
       const { EncryptionUtil: RealEncryptionUtil } = await import('./encryption');
 
-      const unicodeText = 'Hello 世界 🌍 émojis 🚀 symbols ∆∇∈∉';
+      const unicodeText = 'Hello 世界 émojis symbols ∆∇∈∉';
 
       const encrypted = RealEncryptionUtil.encrypt(unicodeText);
       const decrypted = RealEncryptionUtil.decrypt(encrypted);

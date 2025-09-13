@@ -11,19 +11,19 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 print_success() {
-    echo -e "${GREEN}✅ $1${NC}"
+    echo -e "${GREEN}Success: $1${NC}"
 }
 
 print_error() {
-    echo -e "${RED}❌ $1${NC}"
+    echo -e "${RED}Error: $1${NC}"
 }
 
 print_warning() {
-    echo -e "${YELLOW}⚠️  $1${NC}"
+    echo -e "${YELLOW}Warning: $1${NC}"
 }
 
 print_info() {
-    echo -e "${BLUE}ℹ️  $1${NC}"
+    echo -e "${BLUE}Info: $1${NC}"
 }
 
 print_header() {
@@ -32,7 +32,7 @@ print_header() {
     echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 }
 
-print_header "🪝 ALTUS 4 GIT HOOKS TESTING"
+print_header "ALTUS 4 GIT HOOKS TESTING"
 echo ""
 
 # Test if hooks directory exists
@@ -47,7 +47,7 @@ print_success "Husky directory found"
 # List of hooks to test
 HOOKS=("pre-commit" "commit-msg" "post-commit" "pre-push")
 
-print_header "🔍 HOOK CONFIGURATION CHECK"
+print_header "HOOK CONFIGURATION CHECK"
 
 for hook in "${HOOKS[@]}"; do
     hook_path=".husky/$hook"
@@ -64,7 +64,7 @@ for hook in "${HOOKS[@]}"; do
     fi
 done
 
-print_header "⚙️  GIT CONFIGURATION CHECK"
+print_header "GIT CONFIGURATION CHECK"
 
 # Check Git configuration
 echo ""
@@ -112,7 +112,7 @@ else
     print_info "Run: ./bin/setup-gpg.sh to set up GPG signing"
 fi
 
-print_header "🧪 HOOK FUNCTIONALITY TESTS"
+print_header "HOOK FUNCTIONALITY TESTS"
 
 # Test pre-commit hook (dry run)
 echo ""
@@ -161,7 +161,7 @@ for msg in "${INVALID_MESSAGES[@]}"; do
     fi
 done
 
-print_header "🔧 DEPENDENCIES CHECK"
+print_header "DEPENDENCIES CHECK"
 
 # Check Node.js and npm
 NODE_VERSION=$(node --version 2>/dev/null)
@@ -190,7 +190,7 @@ for script in "${REQUIRED_SCRIPTS[@]}"; do
     fi
 done
 
-print_header "📋 RECOMMENDATIONS"
+print_header "RECOMMENDATIONS"
 
 echo ""
 print_info "To ensure optimal hook performance:"
@@ -206,7 +206,7 @@ echo "  npm run commit:verify       # Verify recent commits"
 echo "  npm run commit:setup-signing # Set up GPG signing"
 echo ""
 
-print_header "🎯 TEST COMPLETE"
+print_header "TEST COMPLETE"
 
 echo ""
 print_success "Hook testing completed!"

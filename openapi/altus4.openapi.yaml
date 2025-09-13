@@ -77,6 +77,9 @@ components:
             executionTime:
               type: number
               description: Request execution time in milliseconds
+            apiKeyTier:
+              type: string
+              description: Present on API key authenticated responses
 
     User:
       type: object
@@ -143,6 +146,9 @@ components:
         createdAt:
           type: string
           format: date-time
+        updatedAt:
+          type: string
+          format: date-time
 
     DatabaseConnection:
       type: object
@@ -156,22 +162,18 @@ components:
           type: string
         port:
           type: integer
-        databaseName:
+        database:
           type: string
         username:
           type: string
-        sslEnabled:
+        ssl:
           type: boolean
         isActive:
           type: boolean
-        connectionStatus:
-          type: string
-          enum: [connected, disconnected, error]
-        lastTested:
+        createdAt:
           type: string
           format: date-time
-          nullable: true
-        createdAt:
+        updatedAt:
           type: string
           format: date-time
 
@@ -209,7 +211,7 @@ components:
           type: integer
           minimum: 1
           maximum: 100
-          default: 10
+          default: 20
           description: Maximum number of results
         offset:
           type: integer
@@ -231,25 +233,91 @@ components:
             properties:
               id:
                 type: string
-              database:
-                type: string
               table:
+                type: string
+              database:
                 type: string
               relevanceScore:
                 type: number
-              content:
-                type: object
-              highlights:
+              matchedColumns:
                 type: array
                 items:
                   type: string
+              data:
+                type: object
+                additionalProperties: true
+              snippet:
+                type: string
+              categories:
+                type: array
+                items:
+                  type: string
+        categories:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              count:
+                type: integer
+              confidence:
+                type: number
+        suggestions:
+          type: array
+          items:
+            type: object
+            properties:
+              text:
+                type: string
+              score:
+                type: number
+              type:
+                type: string
+                enum: [spelling, semantic, popular]
+        trends:
+          type: array
+          items:
+            type: object
+            properties:
+              period:
+                type: string
+                enum: [day, week, month, 3months, 6months, year]
+              topQueries:
+                type: array
+                items:
+                  type: string
+              queryVolume:
+                type: number
+              avgResponseTime:
+                type: number
+              popularCategories:
+                type: array
+                items:
+                  type: string
+        queryOptimization:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [index, query, schema]
+              description:
+                type: string
+              impact:
+                type: string
+                enum: [low, medium, high]
+              sqlSuggestion:
+                type: string
         totalCount:
           type: integer
         executionTime:
           type: number
-        analytics:
-          type: object
-          description: Analytics data if requested
+        page:
+          type: integer
+        limit:
+          type: integer
 
   responses:
     BadRequest:
@@ -633,9 +701,8 @@ paths:
                       data:
                         type: object
                         properties:
-                          message:
-                            type: string
-                            example: Password changed successfully
+                          success:
+                            type: boolean
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -661,6 +728,8 @@ paths:
                       data:
                         type: object
                         properties:
+                          user:
+                            $ref: '#/components/schemas/User'
                           token:
                             type: string
                             description: New JWT token
@@ -687,9 +756,8 @@ paths:
                       data:
                         type: object
                         properties:
-                          message:
-                            type: string
-                            example: Logged out successfully
+                          success:
+                            type: boolean
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -713,9 +781,8 @@ paths:
                       data:
                         type: object
                         properties:
-                          message:
-                            type: string
-                            example: Account deactivated successfully
+                          success:
+                            type: boolean
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -783,11 +850,27 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: healthy
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          status:
+                            type: string
+                            example: healthy
+                          timestamp:
+                            type: string
+                            format: date-time
+                          version:
+                            type: string
+                          uptime:
+                            type: number
+                          authenticationMethods:
+                            type: array
+                            items:
+                              type: string
 
   /api/v1/management/migration-status:
     get:
@@ -809,16 +892,14 @@ paths:
                       data:
                         type: object
                         properties:
-                          currentVersion:
+                          userId:
                             type: string
-                          appliedMigrations:
-                            type: array
-                            items:
-                              type: string
-                          pendingMigrations:
-                            type: array
-                            items:
-                              type: string
+                          hasMigrated:
+                            type: boolean
+                          recommendedAction:
+                            type: string
+                          documentation:
+                            type: string
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -902,9 +983,14 @@ paths:
                   - type: object
                     properties:
                       data:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/ApiKey'
+                        type: object
+                        properties:
+                          apiKeys:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/ApiKey'
+                          total:
+                            type: integer
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -947,8 +1033,6 @@ paths:
                   type: string
                   format: date-time
                   nullable: true
-                isActive:
-                  type: boolean
       responses:
         '200':
           description: API key updated successfully
@@ -960,7 +1044,10 @@ paths:
                   - type: object
                     properties:
                       data:
-                        $ref: '#/components/schemas/ApiKey'
+                        type: object
+                        properties:
+                          apiKey:
+                            $ref: '#/components/schemas/ApiKey'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -987,12 +1074,8 @@ paths:
                       data:
                         type: object
                         properties:
-                          revoked:
+                          success:
                             type: boolean
-                            example: true
-                          message:
-                            type: string
-                            example: API key revoked successfully
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -1036,22 +1119,26 @@ paths:
                       data:
                         type: object
                         properties:
-                          totalRequests:
-                            type: integer
-                          requestsByDay:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                date:
-                                  type: string
-                                  format: date
-                                requests:
-                                  type: integer
-                          averageResponseTime:
-                            type: number
-                          errorRate:
-                            type: number
+                          usage:
+                            type: object
+                            properties:
+                              apiKeyId:
+                                type: string
+                              requestCount:
+                                type: integer
+                              lastUsed:
+                                type: string
+                                format: date-time
+                              rateLimitStatus:
+                                type: object
+                                properties:
+                                  tier:
+                                    type: string
+                                  remaining:
+                                    type: integer
+                                  resetTime:
+                                    type: string
+                                    format: date-time
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -1096,6 +1183,8 @@ paths:
                           warning:
                             type: string
                             example: This is the only time the new API key will be shown. Please store it securely.
+                          oldKeyId:
+                            type: string
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -1199,22 +1288,9 @@ paths:
                   - type: object
                     properties:
                       data:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            id:
-                              type: string
-                              format: uuid
-                            name:
-                              type: string
-                            status:
-                              type: string
-                              enum: [connected, disconnected, error]
-                            lastTested:
-                              type: string
-                              format: date-time
-                              nullable: true
+                        type: object
+                        additionalProperties:
+                          type: boolean
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -1286,8 +1362,6 @@ paths:
                   description: Database password (will be encrypted)
                 ssl:
                   type: boolean
-                isActive:
-                  type: boolean
       responses:
         '200':
           description: Database connection updated successfully
@@ -1326,9 +1400,8 @@ paths:
                       data:
                         type: object
                         properties:
-                          message:
-                            type: string
-                            example: Database connection removed successfully
+                          success:
+                            type: boolean
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -1363,14 +1436,10 @@ paths:
                       data:
                         type: object
                         properties:
-                          status:
-                            type: string
-                            enum: [connected, disconnected, error]
+                          connected:
+                            type: boolean
                           message:
                             type: string
-                          responseTime:
-                            type: number
-                            description: Response time in milliseconds
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -1403,39 +1472,47 @@ paths:
                   - type: object
                     properties:
                       data:
-                        type: object
-                        properties:
-                          tables:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                name:
-                                  type: string
-                                columns:
-                                  type: array
-                                  items:
-                                    type: object
-                                    properties:
-                                      name:
-                                        type: string
-                                      type:
-                                        type: string
-                                      nullable:
-                                        type: boolean
-                                      key:
-                                        type: string
-                                fulltextIndexes:
-                                  type: array
-                                  items:
-                                    type: object
-                                    properties:
-                                      name:
-                                        type: string
-                                      columns:
-                                        type: array
-                                        items:
-                                          type: string
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            database:
+                              type: string
+                            table:
+                              type: string
+                            columns:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  name:
+                                    type: string
+                                  type:
+                                    type: string
+                                  isFullTextIndexed:
+                                    type: boolean
+                                  isSearchable:
+                                    type: boolean
+                                  dataPreview:
+                                    type: array
+                                    items:
+                                      type: string
+                            fullTextIndexes:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  name:
+                                    type: string
+                                  columns:
+                                    type: array
+                                    items:
+                                      type: string
+                                  type:
+                                    type: string
+                                    enum: [FULLTEXT]
+                                  cardinality:
+                                    type: integer
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -1527,11 +1604,11 @@ paths:
                               properties:
                                 text:
                                   type: string
-                                relevance:
+                                score:
                                   type: number
                                 type:
                                   type: string
-                                  enum: [query, table, column]
+                                  enum: [spelling, semantic, popular]
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -1552,13 +1629,14 @@ paths:
           application/json:
             schema:
               type: object
-              required: [query]
+              required: [query, databases]
               properties:
                 query:
                   type: string
                   minLength: 1
                 databases:
                   type: array
+                  minItems: 1
                   items:
                     type: string
                     format: uuid
@@ -1577,25 +1655,27 @@ paths:
                         properties:
                           query:
                             type: string
-                          analyzedQuery:
-                            type: string
-                          performance:
-                            type: object
-                            properties:
-                              estimatedTime:
-                                type: number
-                              indexUsage:
-                                type: array
-                                items:
-                                  type: string
-                              recommendations:
-                                type: array
-                                items:
-                                  type: string
-                          aiInsights:
+                          recommendations:
                             type: array
                             items:
                               type: string
+                          performance:
+                            type: object
+                          optimization:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                type:
+                                  type: string
+                                  enum: [index, query, schema]
+                                description:
+                                  type: string
+                                impact:
+                                  type: string
+                                  enum: [low, medium, high]
+                                sqlSuggestion:
+                                  type: string
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -1621,29 +1701,25 @@ paths:
                   - type: object
                     properties:
                       data:
-                        type: object
-                        properties:
-                          totalSearches:
-                            type: integer
-                          popularQueries:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                query:
-                                  type: string
-                                count:
-                                  type: integer
-                          searchesByDay:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                date:
-                                  type: string
-                                  format: date
-                                count:
-                                  type: integer
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            period:
+                              type: string
+                              enum: [day, week, month, 3months, 6months, year]
+                            topQueries:
+                              type: array
+                              items:
+                                type: string
+                            queryVolume:
+                              type: number
+                            avgResponseTime:
+                              type: number
+                            popularCategories:
+                              type: array
+                              items:
+                                type: string
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -1689,16 +1765,15 @@ paths:
                           properties:
                             id:
                               type: string
-                              format: uuid
                             query:
                               type: string
-                            searchMode:
+                            database:
                               type: string
                             resultCount:
                               type: integer
                             executionTime:
                               type: number
-                            createdAt:
+                            timestamp:
                               type: string
                               format: date-time
         '401':
@@ -1743,26 +1818,25 @@ paths:
                   - type: object
                     properties:
                       data:
-                        type: object
-                        properties:
-                          period:
-                            type: string
-                          totalSearches:
-                            type: integer
-                          averageResultsPerSearch:
-                            type: number
-                          trendsData:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                date:
-                                  type: string
-                                  format: date
-                                searches:
-                                  type: integer
-                                averageResponseTime:
-                                  type: number
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            period:
+                              type: string
+                              enum: [day, week, month, 3months, 6months, year]
+                            topQueries:
+                              type: array
+                              items:
+                                type: string
+                            queryVolume:
+                              type: number
+                            avgResponseTime:
+                              type: number
+                            popularCategories:
+                              type: array
+                              items:
+                                type: string
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -1803,15 +1877,7 @@ paths:
                       data:
                         type: object
                         properties:
-                          averageResponseTime:
-                            type: number
-                          p95ResponseTime:
-                            type: number
-                          errorRate:
-                            type: number
-                          throughput:
-                            type: number
-                          performanceData:
+                          timeSeriesData:
                             type: array
                             items:
                               type: object
@@ -1819,10 +1885,36 @@ paths:
                                 date:
                                   type: string
                                   format: date
-                                averageResponseTime:
+                                avg_response_time:
                                   type: number
-                                errorRate:
+                                max_response_time:
                                   type: number
+                                min_response_time:
+                                  type: number
+                                total_queries:
+                                  type: integer
+                                avg_results:
+                                  type: number
+                          searchModeDistribution:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                search_mode:
+                                  type: string
+                                count:
+                                  type: integer
+                                avg_time:
+                                  type: number
+                          summary:
+                            type: object
+                            properties:
+                              totalQueries:
+                                type: integer
+                              averageResponseTime:
+                                type: number
+                              averageResults:
+                                type: number
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -1872,14 +1964,17 @@ paths:
                         items:
                           type: object
                           properties:
-                            query:
+                            query_text:
                               type: string
-                            count:
+                            frequency:
                               type: integer
-                            averageResponseTime:
+                            avg_time:
                               type: number
-                            successRate:
+                            avg_results:
                               type: number
+                            last_used:
+                              type: string
+                              format: date-time
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -1917,29 +2012,25 @@ paths:
                       data:
                         type: object
                         properties:
-                          searches:
+                          items:
                             type: array
                             items:
                               type: object
                               properties:
                                 id:
                                   type: string
-                                  format: uuid
                                 query:
                                   type: string
-                                searchMode:
+                                database:
                                   type: string
                                 resultCount:
                                   type: integer
                                 executionTime:
                                   type: number
-                                satisfaction:
-                                  type: number
-                                  nullable: true
-                                createdAt:
+                                timestamp:
                                   type: string
                                   format: date-time
-                          totalCount:
+                          total:
                             type: integer
         '401':
           $ref: '#/components/responses/Unauthorized'
@@ -1962,27 +2053,21 @@ paths:
                   - type: object
                     properties:
                       data:
-                        type: object
-                        properties:
-                          insights:
-                            type: array
-                            items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            type:
+                              type: string
+                              enum: [query_optimization, trend_analysis, semantic_enhancement]
+                            confidence:
+                              type: number
+                            description:
+                              type: string
+                            actionable:
+                              type: boolean
+                            data:
                               type: object
-                              properties:
-                                title:
-                                  type: string
-                                description:
-                                  type: string
-                                type:
-                                  type: string
-                                  enum: [performance, usage, trend, recommendation]
-                                confidence:
-                                  type: number
-                                  minimum: 0
-                                  maximum: 1
-                          generatedAt:
-                            type: string
-                            format: date-time
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -2006,40 +2091,20 @@ paths:
                       data:
                         type: object
                         properties:
-                          summary:
+                          trends:
                             type: object
-                            properties:
-                              totalSearches:
-                                type: integer
-                              averageResponseTime:
-                                type: number
-                              connectedDatabases:
-                                type: integer
-                              activeApiKeys:
-                                type: integer
-                          recentActivity:
+                          performance:
+                            type: object
+                          popularQueries:
                             type: array
                             items:
                               type: object
-                              properties:
-                                type:
-                                  type: string
-                                description:
-                                  type: string
-                                timestamp:
-                                  type: string
-                                  format: date-time
-                          quickStats:
+                          insights:
+                            type: array
+                            items:
+                              type: object
+                          summary:
                             type: object
-                            properties:
-                              searchesToday:
-                                type: integer
-                              searchesThisWeek:
-                                type: integer
-                              topQuery:
-                                type: string
-                              errorRate:
-                                type: number
         '401':
           $ref: '#/components/responses/Unauthorized'
 

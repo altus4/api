@@ -42,5 +42,5 @@ else
   echo "${KEY_NAME} added to $ENV_FILE"
 fi
 
-echo "✅ Encryption key configuration complete!"
+echo "Success: Encryption key configuration complete!"
 

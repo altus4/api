@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 🔍 Altus 4 API Contract Testing Suite
+# Altus 4 API Contract Testing Suite
 # Systematically tests all API endpoints against OpenAPI 3.0 specification
 # Validates request/response structures, authentication, and error handling
 
@@ -36,24 +36,24 @@ MAIN_API_KEY=""
 MAIN_DATABASE_ID=""
 
 print_success() {
-    echo -e "${GREEN}✅ $1${NC}"
+    echo -e "${GREEN}Success: $1${NC}"
 }
 
 print_error() {
-    echo -e "${RED}❌ $1${NC}"
+    echo -e "${RED}Error: $1${NC}"
 }
 
 print_warning() {
-    echo -e "${YELLOW}⚠️  $1${NC}"
+    echo -e "${YELLOW}Warning: $1${NC}"
 }
 
 print_info() {
-    echo -e "${BLUE}ℹ️  $1${NC}"
+    echo -e "${BLUE}Info: $1${NC}"
 }
 
 print_debug() {
     if [[ "${DEBUG:-false}" == "true" ]]; then
-        echo -e "${PURPLE}🐛 $1${NC}"
+        echo -e "${PURPLE}Debug: $1${NC}"
     fi
 }
 
@@ -163,7 +163,7 @@ validate_json_schema() {
 
 # Setup test environment
 setup_test_environment() {
-    print_header "🏗️  SETTING UP TEST ENVIRONMENT"
+    print_header "SETTING UP TEST ENVIRONMENT"
     
     # Create results directory
     mkdir -p "$(dirname "$TEST_RESULTS_FILE")"
@@ -192,7 +192,7 @@ setup_test_environment() {
 
 # Build and start the application
 build_and_start_app() {
-    print_header "🚀 BUILDING AND STARTING APPLICATION"
+    print_header "BUILDING AND STARTING APPLICATION"
     
     # Stop any existing instances
     print_info "Stopping existing application instances..."
@@ -243,7 +243,7 @@ build_and_start_app() {
 
 # Create test users and authentication tokens
 setup_test_data() {
-    print_header "👥 SETTING UP TEST DATA"
+    print_header "SETTING UP TEST DATA"
     
     # Create admin user
     print_info "Creating admin user..."
@@ -351,7 +351,7 @@ setup_test_data() {
 
 # Test Authentication endpoints
 test_auth_endpoints() {
-    print_header "🔐 TESTING AUTHENTICATION ENDPOINTS"
+    print_header "TESTING AUTHENTICATION ENDPOINTS"
     
     # Test /api/v1/auth/register - Valid registration
     local response
@@ -485,7 +485,7 @@ test_auth_endpoints() {
 
 # Test Database endpoints
 test_database_endpoints() {
-    print_header "🗄️  TESTING DATABASE ENDPOINTS"
+    print_header "TESTING DATABASE ENDPOINTS"
     
     # Test /api/v1/databases - GET with valid token
     local response
@@ -557,7 +557,7 @@ test_database_endpoints() {
 
 # Test API Key endpoints
 test_api_key_endpoints() {
-    print_header "🔑 TESTING API KEY ENDPOINTS"
+    print_header "TESTING API KEY ENDPOINTS"
     
     # Test /api/v1/keys - GET with valid token
     local response
@@ -605,7 +605,7 @@ test_api_key_endpoints() {
 
 # Test Search endpoints  
 test_search_endpoints() {
-    print_header "🔍 TESTING SEARCH ENDPOINTS"
+    print_header "TESTING SEARCH ENDPOINTS"
     
     # Test /api/v1/search - POST with valid API key
     local response
@@ -697,7 +697,7 @@ test_search_endpoints() {
 
 # Test Analytics endpoints
 test_analytics_endpoints() {
-    print_header "📊 TESTING ANALYTICS ENDPOINTS"
+    print_header "TESTING ANALYTICS ENDPOINTS"
     
     # Test /api/v1/analytics/search-trends
     local response
@@ -751,7 +751,7 @@ test_analytics_endpoints() {
 
 # Test edge cases and error conditions
 test_edge_cases() {
-    print_header "🎯 TESTING EDGE CASES AND ERROR CONDITIONS"
+    print_header "TESTING EDGE CASES AND ERROR CONDITIONS"
     
     # Test 404 for non-existent endpoints
     local response
@@ -809,7 +809,7 @@ test_edge_cases() {
 
 # Generate test report
 generate_test_report() {
-    print_header "📋 GENERATING TEST REPORT"
+    print_header "GENERATING TEST REPORT"
     
     # Close JSON array in results file
     echo ']}' >> "$TEST_RESULTS_FILE"
@@ -852,7 +852,7 @@ generate_test_report() {
 </head>
 <body>
     <div class="container">
-        <h1>🔍 Altus 4 API Contract Test Report</h1>
+        <h1>Altus 4 API Contract Test Report</h1>
         <p class="timestamp">Generated: $(date)</p>
         
         <div class="summary">
@@ -914,12 +914,12 @@ EOF
         <h2>OpenAPI Contract Coverage</h2>
         <p>This test suite validates the following aspects of the OpenAPI 3.0 specification:</p>
         <ul>
-            <li>✅ Request/Response schema validation</li>
-            <li>✅ HTTP status code compliance</li>
-            <li>✅ Authentication and authorization</li>
-            <li>✅ Input validation and error handling</li>
-            <li>✅ Content-Type header validation</li>
-            <li>✅ Query parameter validation</li>
+            <li>Request/Response schema validation</li>
+            <li>HTTP status code compliance</li>
+            <li>Authentication and authorization</li>
+            <li>Input validation and error handling</li>
+            <li>Content-Type header validation</li>
+            <li>Query parameter validation</li>
         </ul>
         
         <h2>Summary</h2>
@@ -942,7 +942,7 @@ EOF
 
 # Cleanup function
 cleanup() {
-    print_header "🧹 CLEANING UP"
+    print_header "CLEANING UP"
     
     # Stop the server if we started it
     if [[ -n "${SERVER_PID:-}" ]]; then
@@ -960,7 +960,7 @@ cleanup() {
 
 # Main execution function
 main() {
-    print_header "🚀 ALTUS 4 API CONTRACT TESTING SUITE"
+    print_header "ALTUS 4 API CONTRACT TESTING SUITE"
     echo ""
     print_info "Testing API endpoints against OpenAPI 3.0 specification"
     print_info "Base URL: $API_BASE_URL"
@@ -987,7 +987,7 @@ main() {
     generate_test_report
     
     # Display final summary
-    print_header "📊 TEST SUMMARY"
+    print_header "TEST SUMMARY"
     echo ""
     print_info "Total Tests: $TOTAL_TESTS"
     print_success "Passed: $PASSED_TESTS"

@@ -54,9 +54,9 @@ class AltusServer {
       this.server = createServer(this.app);
 
       this.server.listen(port, () => {
-        logger.info(`🚀 Altus 4 Server started on port ${port}`);
-        logger.info(`🌍 Environment: ${config.environment}`);
-        logger.info(`📊 Health check: http://localhost:${port}/health`);
+        logger.info(`Altus 4 Server started on port ${port}`);
+        logger.info(`Environment: ${config.environment}`);
+        logger.info(`Health check: http://localhost:${port}/health`);
       });
 
       // Graceful shutdown
@@ -73,11 +73,11 @@ class AltusServer {
   }
 
   private async gracefulShutdown(): Promise<void> {
-    logger.info('🛑 Graceful shutdown initiated...');
+    logger.info('Graceful shutdown initiated...');
 
     if (this.server) {
       this.server.close(() => {
-        logger.info('✅ HTTP server closed');
+        logger.info('HTTP server closed');
         process.exit(0);
       });
     }

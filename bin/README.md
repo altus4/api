@@ -1,8 +1,8 @@
-# 🛠️ Altus4 Scripts Directory
+# Altus4 Scripts Directory
 
 This directory contains all operational scripts for the Altus4 project, organized by functionality.
 
-## 📁 Directory Structure
+## Directory Structure
 
 ```
 bin/
@@ -25,7 +25,7 @@ bin/
 └── migrate*                  # Convenience: Database migrations
 ```
 
-## 🚀 Quick Start Commands
+## Quick Start Commands
 
 ### Development Environment
 
@@ -73,7 +73,7 @@ bin/
 ./bin/test/test-hooks.sh
 ```
 
-## 📋 Script Details
+## Script Details
 
 ### Development Scripts (`dev/`)
 
@@ -107,7 +107,7 @@ bin/
 
 - **`test-hooks.sh`**: Tests Git hooks functionality
 
-## 🔧 Environment Variables
+## Environment Variables
 
 Most scripts respect these environment variables:
 
@@ -124,7 +124,7 @@ NODE_ENV=development
 PORT=3000
 ```
 
-## 📝 Usage Examples
+## Usage Examples
 
 ```bash
 # Complete development setup
@@ -140,7 +140,7 @@ PORT=3000
 ./bin/dev-stop
 ```
 
-## 🔄 Migration from Old Structure
+## Migration from Old Structure
 
 The scripts were reorganized from:
 
