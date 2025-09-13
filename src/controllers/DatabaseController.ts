@@ -69,7 +69,11 @@ export class DatabaseController {
       const conn = await this.connection;
 
       const [connections] = await conn.execute<RowDataPacket[]>(
-        'SELECT id, name, host, port, database_name, username, ssl_enabled, is_active, created_at, updated_at FROM database_connections WHERE user_id = ? ORDER BY created_at DESC',
+        `SELECT id, name, host, port, database_name, username, ssl_enabled, 
+                is_active, created_at, updated_at 
+         FROM database_connections 
+         WHERE user_id = ? 
+         ORDER BY created_at DESC`,
         [userId]
       );
 

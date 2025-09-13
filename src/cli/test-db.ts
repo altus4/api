@@ -4,6 +4,7 @@
  * Database connection test utility for debugging Heroku deployments
  */
 import { config } from '@/config';
+import { TIMEOUTS } from '@/config/constants';
 import mysql from 'mysql2/promise';
 import { logger } from '@/utils/logger';
 
@@ -46,7 +47,7 @@ async function testDatabaseConnection() {
       user: config.database.username,
       password: config.database.password,
       database: config.database.database,
-      connectTimeout: 10000,
+      connectTimeout: TIMEOUTS.DATABASE_TEST,
     };
 
     if (sslConfig) {

@@ -16,11 +16,94 @@ import type { ApiResponse } from '@/types';
 import { logger } from '@/utils/logger';
 import type { Response } from 'express';
 
+interface ValidationResult {
+  isValid: boolean;
+  error?: {
+    code: string;
+    message: string;
+  };
+}
+
 export class ApiKeyController {
   private apiKeyService: ApiKeyService;
 
   constructor() {
     this.apiKeyService = new ApiKeyService();
+  }
+
+  /**
+   * Validate API key creation request data
+   */
+  private validateCreateRequest(data: {
+    name: string;
+    environment: string;
+    permissions: string[];
+    rateLimitTier: string;
+  }): ValidationResult {
+    const { name, environment, permissions, rateLimitTier } = data;
+
+    // Validate name
+    if (!name || typeof name !== 'string' || name.trim().length < 3) {
+      return {
+        isValid: false,
+        error: {
+          code: 'INVALID_INPUT',
+          message: 'API key name must be at least 3 characters long',
+        },
+      };
+    }
+
+    // Validate environment
+    if (!['test', 'live'].includes(environment)) {
+      return {
+        isValid: false,
+        error: {
+          code: 'INVALID_ENVIRONMENT',
+          message: 'Environment must be either "test" or "live"',
+        },
+      };
+    }
+
+    // Validate permissions
+    const validPermissions = ['search', 'analytics', 'admin'];
+    if (!Array.isArray(permissions) || !permissions.every(p => validPermissions.includes(p))) {
+      return {
+        isValid: false,
+        error: {
+          code: 'INVALID_PERMISSIONS',
+          message: 'Invalid permissions. Valid options: search, analytics, admin',
+        },
+      };
+    }
+
+    // Validate rate limit tier
+    if (!['free', 'pro', 'enterprise'].includes(rateLimitTier)) {
+      return {
+        isValid: false,
+        error: {
+          code: 'INVALID_RATE_LIMIT_TIER',
+          message: 'Rate limit tier must be "free", "pro", or "enterprise"',
+        },
+      };
+    }
+
+    return { isValid: true };
+  }
+
+  /**
+   * Check if user has permission to create API key with specified tier
+   */
+  private validateUserPermissions(userRole: string, rateLimitTier: string): ValidationResult {
+    if (userRole !== 'admin' && rateLimitTier !== 'free') {
+      return {
+        isValid: false,
+        error: {
+          code: 'INSUFFICIENT_PRIVILEGES',
+          message: 'Only admins can create pro or enterprise API keys',
+        },
+      };
+    }
+    return { isValid: true };
   }
 
   /**
@@ -48,63 +131,28 @@ export class ApiKeyController {
         expiresAt,
       } = req.body;
 
-      // Validate required fields
-      if (!name || typeof name !== 'string' || name.trim().length < 3) {
+      // Validate request data
+      const requestValidation = this.validateCreateRequest({
+        name,
+        environment,
+        permissions,
+        rateLimitTier,
+      });
+
+      if (!requestValidation.isValid) {
         res.status(400).json({
           success: false,
-          error: {
-            code: 'INVALID_INPUT',
-            message: 'API key name must be at least 3 characters long',
-          },
+          error: requestValidation.error,
         } as ApiResponse);
         return;
       }
 
-      // Validate environment
-      if (!['test', 'live'].includes(environment)) {
-        res.status(400).json({
-          success: false,
-          error: {
-            code: 'INVALID_ENVIRONMENT',
-            message: 'Environment must be either "test" or "live"',
-          },
-        } as ApiResponse);
-        return;
-      }
-
-      // Validate permissions
-      const validPermissions = ['search', 'analytics', 'admin'];
-      if (!Array.isArray(permissions) || !permissions.every(p => validPermissions.includes(p))) {
-        res.status(400).json({
-          success: false,
-          error: {
-            code: 'INVALID_PERMISSIONS',
-            message: 'Invalid permissions. Valid options: search, analytics, admin',
-          },
-        } as ApiResponse);
-        return;
-      }
-
-      // Validate rate limit tier
-      if (!['free', 'pro', 'enterprise'].includes(rateLimitTier)) {
-        res.status(400).json({
-          success: false,
-          error: {
-            code: 'INVALID_RATE_LIMIT_TIER',
-            message: 'Rate limit tier must be "free", "pro", or "enterprise"',
-          },
-        } as ApiResponse);
-        return;
-      }
-
-      // Check if user can create this tier (prevent privilege escalation)
-      if (req.user.role !== 'admin' && rateLimitTier !== 'free') {
+      // Check user permissions
+      const permissionValidation = this.validateUserPermissions(req.user.role, rateLimitTier);
+      if (!permissionValidation.isValid) {
         res.status(403).json({
           success: false,
-          error: {
-            code: 'INSUFFICIENT_PRIVILEGES',
-            message: 'Only admins can create pro or enterprise API keys',
-          },
+          error: permissionValidation.error,
         } as ApiResponse);
         return;
       }

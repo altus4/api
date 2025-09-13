@@ -8,6 +8,7 @@
  *   - Instantiate AltusServer to start the application
  */
 import { config } from '@/config';
+import { PORTS } from '@/config/constants';
 import { createApp } from '@/app';
 import { logger } from '@/utils/logger';
 import { createServer } from 'http';
@@ -49,7 +50,7 @@ class AltusServer {
 
   public async start(): Promise<void> {
     try {
-      const port = config.port || 3000;
+      const port = config.port || PORTS.DEFAULT_HTTP;
 
       this.server = createServer(this.app);
 

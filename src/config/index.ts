@@ -1,4 +1,5 @@
 import type { AppConfig } from '@/types';
+import { JWT_MIN_LENGTH, LIMITS } from '@/config/constants';
 import { getDatabaseConfig, getPort, getRedisConfig } from './heroku';
 
 const isTestEnvironment = process.env.NODE_ENV === 'test';
@@ -10,12 +11,12 @@ export const parseIntWithDefault = (value: string | undefined, defaultValue: num
 
 // Helper function to get environment-specific JWT minimum length
 export const getJwtMinLength = (isTestEnv: boolean): number => {
-  return isTestEnv ? 16 : 32;
+  return isTestEnv ? JWT_MIN_LENGTH.TEST : JWT_MIN_LENGTH.PRODUCTION;
 };
 
 // Helper function to validate port range
 export const isValidPort = (port: number): boolean => {
-  return port >= 1 && port <= 65535;
+  return port >= LIMITS.PORT_RANGE_MIN && port <= LIMITS.PORT_RANGE_MAX;
 };
 
 // Helper function to validate environment

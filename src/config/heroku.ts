@@ -3,6 +3,8 @@
  * Handles parsing of Heroku add-on URLs like CLEARDB_DATABASE_URL and REDIS_URL
  */
 
+import { PORTS } from './constants';
+
 export interface ParsedDatabaseUrl {
   host: string;
   port: number;
@@ -27,7 +29,7 @@ export function parseDatabaseUrl(url: string): ParsedDatabaseUrl {
 
     return {
       host: parsed.hostname,
-      port: parseInt(parsed.port) || 3306,
+      port: parseInt(parsed.port) || PORTS.DEFAULT_MYSQL,
       username: parsed.username,
       password: parsed.password,
       database: parsed.pathname.slice(1), // Remove leading slash
@@ -48,7 +50,7 @@ export function parseRedisUrl(url: string): ParsedRedisUrl {
 
     return {
       host: parsed.hostname,
-      port: parseInt(parsed.port) || 6379,
+      port: parseInt(parsed.port) || PORTS.DEFAULT_REDIS,
       password: parsed.password || undefined,
     };
   } catch (error) {
@@ -81,7 +83,7 @@ export function getDatabaseConfig() {
   // Fallback to individual environment variables
   return {
     host: process.env.DB_HOST!,
-    port: parseInt(process.env.DB_PORT || '3306'),
+    port: parseInt(process.env.DB_PORT || PORTS.DEFAULT_MYSQL.toString()),
     username: process.env.DB_USERNAME!,
     password: process.env.DB_PASSWORD!,
     database: process.env.DB_DATABASE!,
@@ -102,7 +104,7 @@ export function getRedisConfig() {
   // Fallback to individual environment variables
   return {
     host: process.env.REDIS_HOST || 'localhost',
-    port: parseInt(process.env.REDIS_PORT || '6379'),
+    port: parseInt(process.env.REDIS_PORT || PORTS.DEFAULT_REDIS.toString()),
     password: process.env.REDIS_PASSWORD || undefined,
   };
 }
@@ -112,5 +114,5 @@ export function getRedisConfig() {
  * Heroku automatically sets the PORT environment variable
  */
 export function getPort(): number {
-  return parseInt(process.env.PORT || '3000');
+  return parseInt(process.env.PORT || PORTS.DEFAULT_HTTP.toString());
 }

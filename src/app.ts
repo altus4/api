@@ -1,4 +1,5 @@
 import { config } from '@/config';
+import { CORS_ORIGINS, HTTP_STATUS, LIMITS } from '@/config/constants';
 import { errorHandler } from '@/middleware/errorHandler';
 import { rateLimiter } from '@/middleware/rateLimiter';
 import { requestLogger } from '@/middleware/requestLogger';
@@ -24,19 +25,14 @@ export function createApp(): express.Application {
   app.use(helmet());
 
   // Enhanced CORS configuration for local development and production
+  const corsOrigins = [
+    ...CORS_ORIGINS.LOCALHOST_PORTS.map(port => `http://localhost:${port}`),
+    ...CORS_ORIGINS.LOCALHOST_127.map(port => `http://127.0.0.1:${port}`),
+    ...(process.env.ALLOWED_ORIGINS?.split(',').filter(Boolean) || []), // Additional origins from env
+  ];
+
   const corsOptions = {
-    origin: [
-      'http://localhost:5173', // Vite dev server (default)
-      'http://localhost:5174', // Vite dev server (default)
-      'http://localhost:3000', // React dev server / Next.js
-      'http://localhost:3001', // Alternative dev port
-      'http://localhost:4173', // Vite preview server
-      'http://localhost:8080', // Vue CLI dev server
-      'http://localhost:5173', // Vite dev server (default)
-      'http://127.0.0.1:5174', // Localhost alias for Vite
-      'http://127.0.0.1:3000', // Localhost alias for React/Next.js
-      ...(process.env.ALLOWED_ORIGINS?.split(',').filter(Boolean) || []), // Additional origins from env
-    ],
+    origin: corsOrigins,
     credentials: true, // Allow cookies/auth headers
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: [
@@ -49,7 +45,7 @@ export function createApp(): express.Application {
       'X-Request-ID',
     ],
     exposedHeaders: ['X-Request-ID', 'X-RateLimit-Remaining'],
-    optionsSuccessStatus: 200, // Some legacy browsers (IE11, various SmartTVs) choke on 204
+    optionsSuccessStatus: HTTP_STATUS.NO_CONTENT, // Some legacy browsers (IE11, various SmartTVs) choke on 204
     preflightContinue: false,
   };
 
@@ -70,8 +66,8 @@ export function createApp(): express.Application {
   // Allow JSON primitives (null/number/string/boolean) when clients send them
   // by setting `strict: false`. The server still prefers objects/arrays but
   // will not reject primitive JSON like `null` which some clients accidentally send.
-  app.use(express.json({ limit: '10mb', strict: false }));
-  app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+  app.use(express.json({ limit: LIMITS.REQUEST_BODY_SIZE, strict: false }));
+  app.use(express.urlencoded({ extended: true, limit: LIMITS.REQUEST_BODY_SIZE }));
 
   // Logging and rate limiting (skip in tests for speed/noise)
   if (process.env.NODE_ENV !== 'test') {
