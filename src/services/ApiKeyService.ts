@@ -11,49 +11,14 @@
  */
 import { config } from '@/config';
 import { logger } from '@/utils/logger';
+import type { ApiKey, ApiKeyUsage, CreateApiKeyRequest } from '@/types/api';
 import crypto from 'crypto';
 import type { RowDataPacket } from 'mysql2/promise';
 import { createConnection } from 'mysql2/promise';
 import { v4 as uuidv4 } from 'uuid';
 
-export interface ApiKey {
-  id: string;
-  userId: string;
-  keyPrefix: string;
-  name: string;
-  environment: 'test' | 'live';
-  permissions: string[];
-  rateLimitTier: 'free' | 'pro' | 'enterprise';
-  rateLimitCustom?: Record<string, any>;
-  expiresAt?: Date;
-  lastUsed?: Date;
-  lastUsedIp?: string;
-  usageCount: number;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface CreateApiKeyRequest {
-  userId: string;
-  name: string;
-  environment: 'test' | 'live';
-  permissions?: string[];
-  rateLimitTier?: 'free' | 'pro' | 'enterprise';
-  rateLimitCustom?: Record<string, any>;
-  expiresAt?: Date;
-}
-
-export interface ApiKeyUsage {
-  apiKeyId: string;
-  requestCount: number;
-  lastUsed: Date;
-  rateLimitStatus: {
-    tier: string;
-    remaining: number;
-    resetTime: Date;
-  };
-}
+// Import and re-export types from centralized location for backward compatibility
+export type { ApiKey, CreateApiKeyRequest, ApiKeyUsage } from '@/types/api';
 
 export class ApiKeyService {
   private connection = createConnection({

@@ -9,6 +9,7 @@
  *   - Use authentication methods for login and token management
  */
 import { config } from '@/config';
+import { HTTP_STATUS } from '@/config/constants';
 import { AppError } from '@/middleware/errorHandler';
 import type { User } from '@/types';
 import { logger } from '@/utils/logger';
@@ -75,7 +76,11 @@ export class UserService {
       );
 
       if (existingUsers.length > 0) {
-        throw new AppError('User with this email already exists', 409, 'USER_ALREADY_EXISTS');
+        throw new AppError(
+          'User with this email already exists',
+          HTTP_STATUS.CONFLICT,
+          'USER_ALREADY_EXISTS'
+        );
       }
 
       // Hash password securely
@@ -130,7 +135,11 @@ export class UserService {
       );
 
       if (users.length === 0) {
-        throw new AppError('Invalid email or password', 401, 'INVALID_CREDENTIALS');
+        throw new AppError(
+          'Invalid email or password',
+          HTTP_STATUS.UNAUTHORIZED,
+          'INVALID_CREDENTIALS'
+        );
       }
 
       const userData = users[0];
@@ -139,7 +148,11 @@ export class UserService {
       const isValidPassword = await bcrypt.compare(credentials.password, userData.password_hash);
 
       if (!isValidPassword) {
-        throw new AppError('Invalid email or password', 401, 'INVALID_CREDENTIALS');
+        throw new AppError(
+          'Invalid email or password',
+          HTTP_STATUS.UNAUTHORIZED,
+          'INVALID_CREDENTIALS'
+        );
       }
 
       // Update last active timestamp
@@ -274,14 +287,18 @@ export class UserService {
       );
 
       if (users.length === 0) {
-        throw new AppError('User not found', 404, 'USER_NOT_FOUND');
+        throw new AppError('User not found', HTTP_STATUS.NOT_FOUND, 'USER_NOT_FOUND');
       }
 
       // Verify current password
       const isValidPassword = await bcrypt.compare(currentPassword, users[0].password_hash);
 
       if (!isValidPassword) {
-        throw new AppError('Current password is incorrect', 401, 'INVALID_CURRENT_PASSWORD');
+        throw new AppError(
+          'Current password is incorrect',
+          HTTP_STATUS.UNAUTHORIZED,
+          'INVALID_CURRENT_PASSWORD'
+        );
       }
 
       // Hash new password
@@ -346,7 +363,7 @@ export class UserService {
       return jwt.verify(token, config.jwtSecret);
     } catch (error) {
       logger.error('Token verification failed:', error);
-      throw new AppError('Invalid or expired token', 401, 'INVALID_TOKEN');
+      throw new AppError('Invalid or expired token', HTTP_STATUS.UNAUTHORIZED, 'INVALID_TOKEN');
     }
   }
 

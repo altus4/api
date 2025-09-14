@@ -8,6 +8,7 @@
  *   - Mount this router at /api/v1/analytics in the main server
  */
 import { AnalyticsController } from '@/controllers/AnalyticsController';
+import { HTTP_STATUS } from '@/config/constants';
 import type { AuthenticatedRequest } from '@/middleware/auth';
 import { authenticate } from '@/middleware/auth';
 import { validateRequest } from '@/middleware/validation';
@@ -63,7 +64,7 @@ router.get(
 
       res.json(response);
     } catch (error) {
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: {
           code: 'TRENDS_RETRIEVAL_FAILED',
@@ -101,7 +102,7 @@ router.get(
 
       res.json(response);
     } catch (error) {
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: {
           code: 'PERFORMANCE_RETRIEVAL_FAILED',
@@ -137,7 +138,7 @@ router.get(
 
       res.json(response);
     } catch (error) {
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: {
           code: 'POPULAR_QUERIES_RETRIEVAL_FAILED',
@@ -172,7 +173,7 @@ router.get(
 
       res.json(response);
     } catch (error) {
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: {
           code: 'HISTORY_RETRIEVAL_FAILED',
@@ -207,7 +208,7 @@ router.get(
 
       res.json(response);
     } catch (error) {
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: {
           code: 'INSIGHTS_RETRIEVAL_FAILED',
@@ -242,7 +243,7 @@ router.get(
 
       res.json(response);
     } catch (error) {
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: {
           code: 'DASHBOARD_RETRIEVAL_FAILED',
@@ -281,7 +282,7 @@ router.get(
 
       res.json(response);
     } catch (error) {
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: {
           code: 'SYSTEM_OVERVIEW_FAILED',
@@ -316,7 +317,7 @@ router.get(
 
       res.json(response);
     } catch (error) {
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: {
           code: 'USER_ACTIVITY_FAILED',
@@ -351,7 +352,7 @@ router.get(
 
       res.json(response);
     } catch (error) {
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: {
           code: 'SYSTEM_PERFORMANCE_FAILED',

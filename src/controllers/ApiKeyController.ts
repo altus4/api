@@ -10,9 +10,9 @@
  *   - Use revokeApiKey() to deactivate API keys
  *   - Use updateApiKey() to modify API key properties
  */
-import type { ApiKeyAuthenticatedRequest } from '@/middleware/apiKeyAuth';
-import { ApiKeyService, type CreateApiKeyRequest } from '@/services/ApiKeyService';
-import type { ApiResponse } from '@/types';
+import { HTTP_STATUS } from '@/config/constants';
+import { ApiKeyService } from '@/services/ApiKeyService';
+import type { ApiKeyAuthenticatedRequest, ApiResponse, CreateApiKeyRequest } from '@/types';
 import { logger } from '@/utils/logger';
 import type { Response } from 'express';
 
@@ -112,7 +112,7 @@ export class ApiKeyController {
   public async createApiKey(req: ApiKeyAuthenticatedRequest, res: Response): Promise<void> {
     try {
       if (!req.user) {
-        res.status(401).json({
+        res.status(HTTP_STATUS.UNAUTHORIZED).json({
           success: false,
           error: {
             code: 'UNAUTHORIZED',
@@ -140,7 +140,7 @@ export class ApiKeyController {
       });
 
       if (!requestValidation.isValid) {
-        res.status(400).json({
+        res.status(HTTP_STATUS.BAD_REQUEST).json({
           success: false,
           error: requestValidation.error,
         } as ApiResponse);
@@ -150,7 +150,7 @@ export class ApiKeyController {
       // Check user permissions
       const permissionValidation = this.validateUserPermissions(req.user.role, rateLimitTier);
       if (!permissionValidation.isValid) {
-        res.status(403).json({
+        res.status(HTTP_STATUS.FORBIDDEN).json({
           success: false,
           error: permissionValidation.error,
         } as ApiResponse);
@@ -171,7 +171,7 @@ export class ApiKeyController {
 
       logger.info(`API key created for user ${req.user.id}: ${result.apiKey.name}`);
 
-      res.status(201).json({
+      res.status(HTTP_STATUS.CREATED).json({
         success: true,
         data: {
           apiKey: {
@@ -197,7 +197,7 @@ export class ApiKeyController {
       } as ApiResponse);
     } catch (error) {
       logger.error('Failed to create API key:', error);
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: {
           code: 'INTERNAL_ERROR',
@@ -213,7 +213,7 @@ export class ApiKeyController {
   public async listApiKeys(req: ApiKeyAuthenticatedRequest, res: Response): Promise<void> {
     try {
       if (!req.user) {
-        res.status(401).json({
+        res.status(HTTP_STATUS.UNAUTHORIZED).json({
           success: false,
           error: {
             code: 'UNAUTHORIZED',
@@ -255,7 +255,7 @@ export class ApiKeyController {
       } as ApiResponse);
     } catch (error) {
       logger.error('Failed to list API keys:', error);
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: {
           code: 'INTERNAL_ERROR',
@@ -271,7 +271,7 @@ export class ApiKeyController {
   public async updateApiKey(req: ApiKeyAuthenticatedRequest, res: Response): Promise<void> {
     try {
       if (!req.user) {
-        res.status(401).json({
+        res.status(HTTP_STATUS.UNAUTHORIZED).json({
           success: false,
           error: {
             code: 'UNAUTHORIZED',
@@ -285,7 +285,7 @@ export class ApiKeyController {
       const { name, permissions, rateLimitTier, expiresAt } = req.body;
 
       if (!keyId) {
-        res.status(400).json({
+        res.status(HTTP_STATUS.BAD_REQUEST).json({
           success: false,
           error: {
             code: 'MISSING_KEY_ID',
@@ -299,7 +299,7 @@ export class ApiKeyController {
 
       if (name !== undefined) {
         if (typeof name !== 'string' || name.trim().length < 3) {
-          res.status(400).json({
+          res.status(HTTP_STATUS.BAD_REQUEST).json({
             success: false,
             error: {
               code: 'INVALID_NAME',
@@ -314,7 +314,7 @@ export class ApiKeyController {
       if (permissions !== undefined) {
         const validPermissions = ['search', 'analytics', 'admin'];
         if (!Array.isArray(permissions) || !permissions.every(p => validPermissions.includes(p))) {
-          res.status(400).json({
+          res.status(HTTP_STATUS.BAD_REQUEST).json({
             success: false,
             error: {
               code: 'INVALID_PERMISSIONS',
@@ -328,7 +328,7 @@ export class ApiKeyController {
 
       if (rateLimitTier !== undefined) {
         if (!['free', 'pro', 'enterprise'].includes(rateLimitTier)) {
-          res.status(400).json({
+          res.status(HTTP_STATUS.BAD_REQUEST).json({
             success: false,
             error: {
               code: 'INVALID_RATE_LIMIT_TIER',
@@ -340,7 +340,7 @@ export class ApiKeyController {
 
         // Check if user can set this tier
         if (req.user.role !== 'admin' && rateLimitTier !== 'free') {
-          res.status(403).json({
+          res.status(HTTP_STATUS.FORBIDDEN).json({
             success: false,
             error: {
               code: 'INSUFFICIENT_PRIVILEGES',
@@ -360,7 +360,7 @@ export class ApiKeyController {
       const updatedKey = await this.apiKeyService.updateApiKey(keyId, req.user.id, updates);
 
       if (!updatedKey) {
-        res.status(404).json({
+        res.status(HTTP_STATUS.NOT_FOUND).json({
           success: false,
           error: {
             code: 'API_KEY_NOT_FOUND',
@@ -398,7 +398,7 @@ export class ApiKeyController {
       } as ApiResponse);
     } catch (error) {
       logger.error('Failed to update API key:', error);
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: {
           code: 'INTERNAL_ERROR',
@@ -414,7 +414,7 @@ export class ApiKeyController {
   public async revokeApiKey(req: ApiKeyAuthenticatedRequest, res: Response): Promise<void> {
     try {
       if (!req.user) {
-        res.status(401).json({
+        res.status(HTTP_STATUS.UNAUTHORIZED).json({
           success: false,
           error: {
             code: 'UNAUTHORIZED',
@@ -427,7 +427,7 @@ export class ApiKeyController {
       const { keyId } = req.params;
 
       if (!keyId) {
-        res.status(400).json({
+        res.status(HTTP_STATUS.BAD_REQUEST).json({
           success: false,
           error: {
             code: 'MISSING_KEY_ID',
@@ -440,7 +440,7 @@ export class ApiKeyController {
       const success = await this.apiKeyService.revokeApiKey(keyId, req.user.id);
 
       if (!success) {
-        res.status(404).json({
+        res.status(HTTP_STATUS.NOT_FOUND).json({
           success: false,
           error: {
             code: 'API_KEY_NOT_FOUND',
@@ -466,7 +466,7 @@ export class ApiKeyController {
       } as ApiResponse);
     } catch (error) {
       logger.error('Failed to revoke API key:', error);
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: {
           code: 'INTERNAL_ERROR',
@@ -482,7 +482,7 @@ export class ApiKeyController {
   public async getApiKeyUsage(req: ApiKeyAuthenticatedRequest, res: Response): Promise<void> {
     try {
       if (!req.user) {
-        res.status(401).json({
+        res.status(HTTP_STATUS.UNAUTHORIZED).json({
           success: false,
           error: {
             code: 'UNAUTHORIZED',
@@ -495,7 +495,7 @@ export class ApiKeyController {
       const { keyId } = req.params;
 
       if (!keyId) {
-        res.status(400).json({
+        res.status(HTTP_STATUS.BAD_REQUEST).json({
           success: false,
           error: {
             code: 'MISSING_KEY_ID',
@@ -510,7 +510,7 @@ export class ApiKeyController {
       if (daysParam !== undefined) {
         const days = parseInt(daysParam as string, 10);
         if (!Number.isFinite(days) || days < 1) {
-          res.status(400).json({
+          res.status(HTTP_STATUS.BAD_REQUEST).json({
             success: false,
             error: {
               code: 'VALIDATION_ERROR',
@@ -520,7 +520,7 @@ export class ApiKeyController {
           return;
         }
         if (days > 365) {
-          res.status(400).json({
+          res.status(HTTP_STATUS.BAD_REQUEST).json({
             success: false,
             error: {
               code: 'VALIDATION_ERROR',
@@ -534,7 +534,7 @@ export class ApiKeyController {
       const usage = await this.apiKeyService.getApiKeyUsage(keyId, req.user.id);
 
       if (!usage) {
-        res.status(404).json({
+        res.status(HTTP_STATUS.NOT_FOUND).json({
           success: false,
           error: {
             code: 'API_KEY_NOT_FOUND',
@@ -557,7 +557,7 @@ export class ApiKeyController {
       } as ApiResponse);
     } catch (error) {
       logger.error('Failed to get API key usage:', error);
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: {
           code: 'INTERNAL_ERROR',
@@ -573,7 +573,7 @@ export class ApiKeyController {
   public async regenerateApiKey(req: ApiKeyAuthenticatedRequest, res: Response): Promise<void> {
     try {
       if (!req.user) {
-        res.status(401).json({
+        res.status(HTTP_STATUS.UNAUTHORIZED).json({
           success: false,
           error: {
             code: 'UNAUTHORIZED',
@@ -586,7 +586,7 @@ export class ApiKeyController {
       const { keyId } = req.params;
 
       if (!keyId) {
-        res.status(400).json({
+        res.status(HTTP_STATUS.BAD_REQUEST).json({
           success: false,
           error: {
             code: 'MISSING_KEY_ID',
@@ -601,7 +601,7 @@ export class ApiKeyController {
       const existingKey = existingKeys.find(key => key.id === keyId);
 
       if (!existingKey) {
-        res.status(404).json({
+        res.status(HTTP_STATUS.NOT_FOUND).json({
           success: false,
           error: {
             code: 'API_KEY_NOT_FOUND',
@@ -654,7 +654,7 @@ export class ApiKeyController {
       } as ApiResponse);
     } catch (error) {
       logger.error('Failed to regenerate API key:', error);
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: {
           code: 'INTERNAL_ERROR',

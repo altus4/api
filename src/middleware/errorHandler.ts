@@ -9,6 +9,7 @@
  *   - Use errorHandler as the last middleware to handle all errors
  */
 import { config } from '@/config';
+import { HTTP_STATUS } from '@/config/constants';
 import type { ApiResponse } from '@/types';
 import { logger } from '@/utils/logger';
 import type { NextFunction, Request, Response } from 'express';
@@ -21,7 +22,11 @@ export class AppError extends Error {
   public code: string;
   public isOperational: boolean;
 
-  constructor(message: string, statusCode: number = 500, code: string = 'INTERNAL_ERROR') {
+  constructor(
+    message: string,
+    statusCode: number = HTTP_STATUS.INTERNAL_SERVER_ERROR,
+    code: string = 'INTERNAL_ERROR'
+  ) {
     super(message);
     this.statusCode = statusCode;
     this.code = code;
@@ -69,11 +74,11 @@ export const errorHandler = (
       message: (error as any).message,
     });
 
-    res.status(400).json(response);
+    res.status(HTTP_STATUS.BAD_REQUEST).json(response);
     return;
   }
 
-  let statusCode = 500;
+  let statusCode: number = HTTP_STATUS.INTERNAL_SERVER_ERROR;
   let code = 'INTERNAL_ERROR';
   let message = 'Internal server error';
 
@@ -83,28 +88,28 @@ export const errorHandler = (
     code = errorCode;
     message = errorMessage;
   } else if (error.name === 'ValidationError') {
-    statusCode = 400;
+    statusCode = HTTP_STATUS.BAD_REQUEST;
     code = 'VALIDATION_ERROR';
     const { message: errorMessage } = error;
     message = errorMessage;
   } else if (error.name === 'CastError') {
-    statusCode = 400;
+    statusCode = HTTP_STATUS.BAD_REQUEST;
     code = 'INVALID_DATA';
     message = 'Invalid data format';
   } else if (error.name === 'JsonWebTokenError') {
-    statusCode = 401;
+    statusCode = HTTP_STATUS.UNAUTHORIZED;
     code = 'INVALID_TOKEN';
     message = 'Invalid token';
   } else if (error.name === 'TokenExpiredError') {
-    statusCode = 401;
+    statusCode = HTTP_STATUS.UNAUTHORIZED;
     code = 'TOKEN_EXPIRED';
     message = 'Token expired';
   } else if (error.message.includes('ER_NO_SUCH_TABLE')) {
-    statusCode = 500;
+    statusCode = HTTP_STATUS.INTERNAL_SERVER_ERROR;
     code = 'DATABASE_ERROR';
     message = 'Database table not found';
   } else if (error.message.includes('ECONNREFUSED')) {
-    statusCode = 500;
+    statusCode = HTTP_STATUS.INTERNAL_SERVER_ERROR;
     code = 'CONNECTION_ERROR';
     message = 'Database connection refused';
   }

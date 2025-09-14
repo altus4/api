@@ -7,6 +7,7 @@
  * Usage:
  *   - Use validateRequest to validate incoming requests for endpoints
  */
+import { HTTP_STATUS } from '@/config/constants';
 import type { ApiResponse } from '@/types';
 import type { NextFunction, Request, Response } from 'express';
 import type { ZodSchema } from 'zod';
@@ -52,7 +53,7 @@ export const validateRequest = (schema: {
             version: process.env.npm_package_version || '0.3.0',
           },
         };
-        res.status(400).json(response);
+        res.status(HTTP_STATUS.BAD_REQUEST).json(response);
       } else {
         next(error);
       }

@@ -53,7 +53,7 @@ export function createApp(): express.Application {
 
   // CORS debugging middleware (only in development)
   if (config.environment === 'development') {
-    app.use((req, res, next) => {
+    app.use((req, _res, next) => {
       const origin = req.get('Origin');
       if (origin && req.method === 'OPTIONS') {
         logger.debug(`CORS preflight from origin: ${origin}`);
@@ -76,7 +76,7 @@ export function createApp(): express.Application {
   }
 
   // Health check endpoint for monitoring
-  app.get('/health', (req, res) => {
+  app.get('/health', (_req, res) => {
     res.json({
       status: 'healthy',
       timestamp: new Date().toISOString(),
@@ -97,8 +97,8 @@ export function createApp(): express.Application {
   app.use('/api/v1', apiV1);
 
   // 404 handler
-  app.use('*', (req, res) => {
-    res.status(404).json({
+  app.use('*', (_req, res) => {
+    res.status(HTTP_STATUS.NOT_FOUND).json({
       success: false,
       error: {
         code: 'NOT_FOUND',

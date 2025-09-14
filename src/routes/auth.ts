@@ -8,6 +8,7 @@
  *   - Mount this router at /api/v1/auth in the main server
  */
 import { AuthController } from '@/controllers/AuthController';
+import { HTTP_STATUS } from '@/config/constants';
 import type { AuthenticatedRequest } from '@/middleware/auth';
 import { authenticate } from '@/middleware/auth';
 import { validateRequest } from '@/middleware/validation';
@@ -60,9 +61,9 @@ router.post('/register', validateRequest({ body: registerSchema }), async (req, 
       },
     };
 
-    res.status(201).json(response);
+    res.status(HTTP_STATUS.CREATED).json(response);
   } catch (error) {
-    res.status(400).json({
+    res.status(HTTP_STATUS.BAD_REQUEST).json({
       success: false,
       error: {
         code: 'REGISTRATION_FAILED',
@@ -92,7 +93,7 @@ router.post('/login', validateRequest({ body: loginSchema }), async (req, res) =
 
     res.json(response);
   } catch (error) {
-    res.status(401).json({
+    res.status(HTTP_STATUS.UNAUTHORIZED).json({
       success: false,
       error: {
         code: 'AUTHENTICATION_FAILED',
@@ -111,7 +112,7 @@ router.get('/profile', authenticate, async (req: AuthenticatedRequest, res) => {
     const user = await authController.getProfile(req.user!.id);
 
     if (!user) {
-      return res.status(404).json({
+      return res.status(HTTP_STATUS.NOT_FOUND).json({
         success: false,
         error: {
           code: 'USER_NOT_FOUND',
@@ -132,7 +133,7 @@ router.get('/profile', authenticate, async (req: AuthenticatedRequest, res) => {
 
     return res.json(response);
   } catch (error) {
-    return res.status(500).json({
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: {
         code: 'PROFILE_RETRIEVAL_FAILED',
@@ -155,7 +156,7 @@ router.put(
       const user = await authController.updateProfile(req.user!.id, req.body);
 
       if (!user) {
-        return res.status(404).json({
+        return res.status(HTTP_STATUS.NOT_FOUND).json({
           success: false,
           error: {
             code: 'USER_NOT_FOUND',
@@ -176,7 +177,7 @@ router.put(
 
       return res.json(response);
     } catch (error) {
-      return res.status(400).json({
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         error: {
           code: 'PROFILE_UPDATE_FAILED',
@@ -211,7 +212,7 @@ router.post(
 
       res.json(response);
     } catch (error) {
-      res.status(400).json({
+      res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         error: {
           code: 'PASSWORD_CHANGE_FAILED',
@@ -232,7 +233,7 @@ router.post('/refresh', authenticate, async (req: AuthenticatedRequest, res) => 
     const token = authHeader?.substring(7); // Remove 'Bearer ' prefix
 
     if (!token) {
-      return res.status(401).json({
+      return res.status(HTTP_STATUS.UNAUTHORIZED).json({
         success: false,
         error: {
           code: 'NO_TOKEN',
@@ -255,7 +256,7 @@ router.post('/refresh', authenticate, async (req: AuthenticatedRequest, res) => 
 
     return res.json(response);
   } catch (error) {
-    return res.status(401).json({
+    return res.status(HTTP_STATUS.UNAUTHORIZED).json({
       success: false,
       error: {
         code: 'TOKEN_REFRESH_FAILED',
@@ -285,7 +286,7 @@ router.post('/logout', authenticate, async (req: AuthenticatedRequest, res) => {
 
     res.json(response);
   } catch (error) {
-    res.status(500).json({
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: {
         code: 'LOGOUT_FAILED',
@@ -315,7 +316,7 @@ router.delete('/account', authenticate, async (req: AuthenticatedRequest, res) =
 
     res.json(response);
   } catch (error) {
-    res.status(500).json({
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: {
         code: 'ACCOUNT_DEACTIVATION_FAILED',

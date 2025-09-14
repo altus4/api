@@ -10,24 +10,14 @@
  *   - Use requirePermission to restrict access based on API key permissions
  *   - Use requireRole for role-based access control
  */
-import type { ApiKey } from '@/services/ApiKeyService';
+import { HTTP_STATUS } from '@/config/constants';
 import { ApiKeyService } from '@/services/ApiKeyService';
-import type { ApiResponse } from '@/types';
+import type { ApiKeyAuthenticatedRequest, ApiResponse } from '@/types';
 import { logger } from '@/utils/logger';
-import type { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Response } from 'express';
 
-/**
- * Extends Express Request to include authenticated user and API key info.
- */
-export interface ApiKeyAuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    email: string;
-    name: string;
-    role: 'admin' | 'user';
-  };
-  apiKey?: ApiKey;
-}
+// Import and re-export types from centralized location
+export type { ApiKeyAuthenticatedRequest, ApiKey } from '@/types';
 
 // Initialize API key service
 const apiKeyService = new ApiKeyService();
@@ -47,7 +37,7 @@ export const authenticateApiKey = async (
 
     // Check if authorization header exists
     if (!authHeader) {
-      res.status(401).json({
+      res.status(HTTP_STATUS.UNAUTHORIZED).json({
         success: false,
         error: {
           code: 'NO_API_KEY',
@@ -60,7 +50,7 @@ export const authenticateApiKey = async (
     // Check for Bearer format with API key
     const bearerMatch = authHeader.match(/^bearer\s+(.*)$/i);
     if (!bearerMatch) {
-      res.status(401).json({
+      res.status(HTTP_STATUS.UNAUTHORIZED).json({
         success: false,
         error: {
           code: 'INVALID_AUTH_FORMAT',
@@ -74,7 +64,7 @@ export const authenticateApiKey = async (
 
     // Validate API key format
     if (!apiKey.startsWith('altus4_sk_')) {
-      res.status(401).json({
+      res.status(HTTP_STATUS.UNAUTHORIZED).json({
         success: false,
         error: {
           code: 'INVALID_API_KEY_FORMAT',
@@ -88,7 +78,7 @@ export const authenticateApiKey = async (
     const validationResult = await apiKeyService.validateApiKey(apiKey);
 
     if (!validationResult) {
-      res.status(401).json({
+      res.status(HTTP_STATUS.UNAUTHORIZED).json({
         success: false,
         error: {
           code: 'INVALID_API_KEY',
@@ -121,7 +111,7 @@ export const authenticateApiKey = async (
   } catch (error: any) {
     logger.error('API key authentication error:', error);
 
-    res.status(401).json({
+    res.status(HTTP_STATUS.UNAUTHORIZED).json({
       success: false,
       error: {
         code: 'AUTH_ERROR',
@@ -146,7 +136,7 @@ export const authenticateApiKey = async (
 export const requirePermission = (permission: string) => {
   return (req: ApiKeyAuthenticatedRequest, res: Response, next: NextFunction): void => {
     if (!req.apiKey) {
-      res.status(401).json({
+      res.status(HTTP_STATUS.UNAUTHORIZED).json({
         success: false,
         error: {
           code: 'UNAUTHORIZED',
@@ -162,7 +152,7 @@ export const requirePermission = (permission: string) => {
     }
 
     if (!Array.isArray(req.apiKey.permissions) || !req.apiKey.permissions.includes(permission)) {
-      res.status(403).json({
+      res.status(HTTP_STATUS.FORBIDDEN).json({
         success: false,
         error: {
           code: 'INSUFFICIENT_PERMISSIONS',
@@ -190,7 +180,7 @@ export const requirePermission = (permission: string) => {
 export const requireRole = (role: 'admin' | 'user') => {
   return (req: ApiKeyAuthenticatedRequest, res: Response, next: NextFunction): void => {
     if (!req.user) {
-      res.status(401).json({
+      res.status(HTTP_STATUS.UNAUTHORIZED).json({
         success: false,
         error: {
           code: 'UNAUTHORIZED',
@@ -201,7 +191,7 @@ export const requireRole = (role: 'admin' | 'user') => {
     }
 
     if (req.user.role !== role && req.user.role !== 'admin') {
-      res.status(403).json({
+      res.status(HTTP_STATUS.FORBIDDEN).json({
         success: false,
         error: {
           code: 'FORBIDDEN',
@@ -228,7 +218,7 @@ export const requireRole = (role: 'admin' | 'user') => {
 export const requireEnvironment = (environment: 'test' | 'live') => {
   return (req: ApiKeyAuthenticatedRequest, res: Response, next: NextFunction): void => {
     if (!req.apiKey) {
-      res.status(401).json({
+      res.status(HTTP_STATUS.UNAUTHORIZED).json({
         success: false,
         error: {
           code: 'UNAUTHORIZED',
@@ -239,7 +229,7 @@ export const requireEnvironment = (environment: 'test' | 'live') => {
     }
 
     if (req.apiKey.environment !== environment) {
-      res.status(403).json({
+      res.status(HTTP_STATUS.FORBIDDEN).json({
         success: false,
         error: {
           code: 'ENVIRONMENT_MISMATCH',
@@ -267,7 +257,7 @@ export const checkApiKeyExpiration = (
   next: NextFunction
 ): void => {
   if (!req.apiKey) {
-    res.status(401).json({
+    res.status(HTTP_STATUS.UNAUTHORIZED).json({
       success: false,
       error: {
         code: 'UNAUTHORIZED',
@@ -278,7 +268,7 @@ export const checkApiKeyExpiration = (
   }
 
   if (req.apiKey.expiresAt && req.apiKey.expiresAt < new Date()) {
-    res.status(401).json({
+    res.status(HTTP_STATUS.UNAUTHORIZED).json({
       success: false,
       error: {
         code: 'API_KEY_EXPIRED',
@@ -308,5 +298,4 @@ export const getApiKeyId = (req: ApiKeyAuthenticatedRequest): string => {
   return req.apiKey?.id || req.ip || 'unknown';
 };
 
-// Export types for other modules
-export type { ApiKey } from '@/services/ApiKeyService';
+// Types are exported at the top of the file

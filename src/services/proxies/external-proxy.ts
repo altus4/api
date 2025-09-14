@@ -18,19 +18,9 @@ export class TimeoutError extends Error {
   }
 }
 
-/**
- * Base configuration for external service proxies
- */
-export interface ExternalProxyConfig {
-  /** Default timeout for all API calls */
-  defaultTimeout: number;
-  /** Service name for error logging */
-  serviceName: string;
-  /** Custom timeout handler */
-  onTimeout?: (error: TimeoutError, operation: string) => void;
-  /** Custom error handler */
-  onError?: (error: unknown, operation: string) => void;
-}
+// Import and re-export configuration types from centralized location
+import type { ExternalProxyConfig } from '@/types/config';
+export type { ExternalProxyConfig };
 
 /**
  * Abstract base class for external service proxies

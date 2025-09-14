@@ -9,6 +9,7 @@
  *   - Mount this router at /api/v1/search in the main server
  */
 import { SearchController } from '@/controllers/SearchController';
+import { HTTP_STATUS } from '@/config/constants';
 import type { ApiKeyAuthenticatedRequest } from '@/middleware/apiKeyAuth';
 import { authenticateApiKey, requirePermission } from '@/middleware/apiKeyAuth';
 import { rateLimiter } from '@/middleware/rateLimiter';
@@ -78,7 +79,7 @@ router.post(
 
       res.json(response);
     } catch (error) {
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: {
           code: 'SEARCH_FAILED',
@@ -119,7 +120,7 @@ router.get(
 
       res.json(response);
     } catch (error) {
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: {
           code: 'SUGGESTIONS_FAILED',
@@ -159,7 +160,7 @@ router.post(
 
       res.json(response);
     } catch (error) {
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: {
           code: 'ANALYSIS_FAILED',
@@ -194,7 +195,7 @@ router.get(
 
       res.json(response);
     } catch (error) {
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: {
           code: 'TRENDS_FAILED',
@@ -232,7 +233,7 @@ router.get(
 
       res.json(response);
     } catch (error) {
-      res.status(500).json({
+      res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         success: false,
         error: {
           code: 'HISTORY_FAILED',

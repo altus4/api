@@ -8,6 +8,7 @@
  *   - Mount this router at /api/v1/databases in the main server
  */
 import { DatabaseController } from '@/controllers/DatabaseController';
+import { HTTP_STATUS } from '@/config/constants';
 import type { AuthenticatedRequest } from '@/middleware/auth';
 import { authenticate } from '@/middleware/auth';
 import { validateRequest } from '@/middleware/validation';
@@ -62,7 +63,7 @@ router.get('/', async (req: AuthenticatedRequest, res) => {
 
     res.json(response);
   } catch (error) {
-    res.status(500).json({
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: {
         code: 'DATABASE_RETRIEVAL_FAILED',
@@ -93,9 +94,9 @@ router.post(
         },
       };
 
-      res.status(201).json(response);
+      res.status(HTTP_STATUS.CREATED).json(response);
     } catch (error) {
-      res.status(400).json({
+      res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         error: {
           code: 'DATABASE_CONNECTION_FAILED',
@@ -127,7 +128,7 @@ router.get('/status', async (req: AuthenticatedRequest, res) => {
 
     res.json(response);
   } catch (error) {
-    res.status(500).json({
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: {
         code: 'STATUS_CHECK_FAILED',
@@ -149,7 +150,7 @@ router.get('/:connectionId', async (req: AuthenticatedRequest, res) => {
     );
 
     if (!connection) {
-      return res.status(404).json({
+      return res.status(HTTP_STATUS.NOT_FOUND).json({
         success: false,
         error: {
           code: 'CONNECTION_NOT_FOUND',
@@ -170,7 +171,7 @@ router.get('/:connectionId', async (req: AuthenticatedRequest, res) => {
 
     return res.json(response);
   } catch (error) {
-    return res.status(500).json({
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: {
         code: 'CONNECTION_RETRIEVAL_FAILED',
@@ -196,7 +197,7 @@ router.put(
       );
 
       if (!connection) {
-        return res.status(404).json({
+        return res.status(HTTP_STATUS.NOT_FOUND).json({
           success: false,
           error: {
             code: 'CONNECTION_NOT_FOUND',
@@ -217,7 +218,7 @@ router.put(
 
       return res.json(response);
     } catch (error) {
-      return res.status(400).json({
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         error: {
           code: 'CONNECTION_UPDATE_FAILED',
@@ -240,7 +241,7 @@ router.delete('/:connectionId', async (req: AuthenticatedRequest, res) => {
     );
 
     if (!success) {
-      return res.status(404).json({
+      return res.status(HTTP_STATUS.NOT_FOUND).json({
         success: false,
         error: {
           code: 'CONNECTION_NOT_FOUND',
@@ -261,7 +262,7 @@ router.delete('/:connectionId', async (req: AuthenticatedRequest, res) => {
 
     return res.json(response);
   } catch (error) {
-    return res.status(500).json({
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: {
         code: 'CONNECTION_REMOVAL_FAILED',
@@ -291,7 +292,7 @@ router.post('/:connectionId/test', async (req: AuthenticatedRequest, res) => {
 
     res.json(response);
   } catch (error) {
-    res.status(500).json({
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: {
         code: 'CONNECTION_TEST_FAILED',
@@ -321,7 +322,7 @@ router.get('/:connectionId/schema', async (req: AuthenticatedRequest, res) => {
 
     res.json(response);
   } catch (error) {
-    res.status(500).json({
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: {
         code: 'SCHEMA_DISCOVERY_FAILED',

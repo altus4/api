@@ -9,6 +9,7 @@
  *   - GET /api/v1/management/health - Health check with auth status
  */
 import { ApiKeyController } from '@/controllers/ApiKeyController';
+import { HTTP_STATUS } from '@/config/constants';
 import type { AuthenticatedRequest } from '@/middleware/auth';
 import { authenticate } from '@/middleware/auth';
 import { rateLimiter } from '@/middleware/rateLimiter';
@@ -29,7 +30,7 @@ router.use(rateLimiter);
 router.post('/setup', authenticate, async (req: AuthenticatedRequest, res) => {
   try {
     if (!req.user) {
-      res.status(401).json({
+      res.status(HTTP_STATUS.UNAUTHORIZED).json({
         success: false,
         error: {
           code: 'UNAUTHORIZED',
@@ -55,7 +56,7 @@ router.post('/setup', authenticate, async (req: AuthenticatedRequest, res) => {
 
     await apiKeyController.createApiKey(mockApiKeyRequest as any, res);
   } catch (error) {
-    res.status(500).json({
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: {
         code: 'SETUP_FAILED',
@@ -97,7 +98,7 @@ router.get('/health', (req, res) => {
 router.get('/migration-status', authenticate, async (req: AuthenticatedRequest, res) => {
   try {
     if (!req.user) {
-      res.status(401).json({
+      res.status(HTTP_STATUS.UNAUTHORIZED).json({
         success: false,
         error: {
           code: 'UNAUTHORIZED',
@@ -124,7 +125,7 @@ router.get('/migration-status', authenticate, async (req: AuthenticatedRequest, 
       },
     } as ApiResponse);
   } catch (_error) {
-    res.status(500).json({
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: {
         code: 'STATUS_CHECK_FAILED',

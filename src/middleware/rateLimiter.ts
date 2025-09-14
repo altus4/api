@@ -10,6 +10,7 @@
  *   - Automatically applies appropriate limits based on API key tier
  */
 import { config } from '@/config';
+import { HTTP_STATUS } from '@/config/constants';
 import type { ApiResponse } from '@/types';
 import { logger } from '@/utils/logger';
 import type { NextFunction, Response } from 'express';
@@ -224,7 +225,7 @@ export const rateLimiter = async (
       },
     };
 
-    res.status(429).json(response);
+    res.status(HTTP_STATUS.TOO_MANY_REQUESTS).json(response);
   }
 };
 

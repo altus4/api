@@ -4,20 +4,9 @@
  */
 
 import { PORTS } from './constants';
+import type { ParsedDatabaseUrl, ParsedRedisUrl } from '@/types/config';
 
-export interface ParsedDatabaseUrl {
-  host: string;
-  port: number;
-  username: string;
-  password: string;
-  database: string;
-}
-
-export interface ParsedRedisUrl {
-  host: string;
-  port: number;
-  password?: string;
-}
+// Types imported from centralized location
 
 /**
  * Parse a database URL in the format:

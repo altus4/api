@@ -9,21 +9,14 @@
  *   - Use requireRole to restrict access based on user role
  */
 import { config } from '@/config';
+import { HTTP_STATUS } from '@/config/constants';
 import type { ApiResponse } from '@/types';
-import type { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
-/**
- * Extends Express Request to include authenticated user info.
- */
-export interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-    email: string;
-    name: string;
-    role: 'admin' | 'user';
-  };
-}
+// Import and re-export types from centralized location
+import type { AuthenticatedRequest } from '@/types/auth';
+export type { AuthenticatedRequest };
 
 /**
  * Middleware to authenticate requests using JWT.
@@ -40,7 +33,7 @@ export const authenticate = async (
 
     // Check if authorization header exists
     if (!authHeader) {
-      res.status(401).json({
+      res.status(HTTP_STATUS.UNAUTHORIZED).json({
         success: false,
         error: {
           code: 'NO_TOKEN',
@@ -55,7 +48,7 @@ export const authenticate = async (
     const bearerMatch = normalizedHeader.match(/^bearer\s*(.*)$/i);
 
     if (!bearerMatch) {
-      res.status(401).json({
+      res.status(HTTP_STATUS.UNAUTHORIZED).json({
         success: false,
         error: {
           code: 'INVALID_AUTH_FORMAT',
@@ -69,7 +62,7 @@ export const authenticate = async (
 
     // Check if token is empty
     if (!token) {
-      res.status(401).json({
+      res.status(HTTP_STATUS.UNAUTHORIZED).json({
         success: false,
         error: {
           code: 'NO_TOKEN',
@@ -103,7 +96,7 @@ export const authenticate = async (
       errorMessage = 'Invalid token format or signature';
     }
 
-    res.status(401).json({
+    res.status(HTTP_STATUS.UNAUTHORIZED).json({
       success: false,
       error: {
         code: errorCode,
@@ -122,7 +115,7 @@ export const authenticate = async (
 export const requireRole = (role: 'admin' | 'user') => {
   return (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
     if (!req.user) {
-      res.status(401).json({
+      res.status(HTTP_STATUS.UNAUTHORIZED).json({
         success: false,
         error: {
           code: 'UNAUTHORIZED',
@@ -133,7 +126,7 @@ export const requireRole = (role: 'admin' | 'user') => {
     }
 
     if (req.user.role !== role && req.user.role !== 'admin') {
-      res.status(403).json({
+      res.status(HTTP_STATUS.FORBIDDEN).json({
         success: false,
         error: {
           code: 'FORBIDDEN',
