@@ -351,9 +351,11 @@ jest.mock('mysql2/promise', () => {
 
       // List database connections for user
       if (
-        query.includes(
+        (query.includes(
           'SELECT id, name, host, port, database_name, username, ssl_enabled, is_active, created_at, updated_at FROM database_connections'
-        ) &&
+        ) ||
+          (query.includes('FROM database_connections') &&
+            query.includes('SELECT id, name, host, port, database_name, username, ssl_enabled'))) &&
         query.includes('WHERE user_id = ?')
       ) {
         const userId = params[0];

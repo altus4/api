@@ -69,7 +69,11 @@ export class DatabaseController {
       const conn = await this.connection;
 
       const [connections] = await conn.execute<RowDataPacket[]>(
-        'SELECT id, name, host, port, database_name, username, ssl_enabled, is_active, created_at, updated_at FROM database_connections WHERE user_id = ? ORDER BY created_at DESC',
+        `SELECT id, name, host, port, database_name, username, ssl_enabled, 
+                is_active, created_at, updated_at 
+         FROM database_connections 
+         WHERE user_id = ? 
+         ORDER BY created_at DESC`,
         [userId]
       );
 
@@ -139,10 +143,11 @@ export class DatabaseController {
     connectionData: Omit<DatabaseConnection, 'id' | 'createdAt' | 'updatedAt' | 'isActive'>
   ): Promise<DatabaseConnectionResponse> {
     try {
+      const conn = await this.connection;
+
       // First test the connection
       await this.testConnectionData(connectionData);
 
-      const conn = await this.connection;
       const connectionId = uuidv4();
       const now = new Date();
 

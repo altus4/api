@@ -9,6 +9,7 @@
  *   - Use logger.info, logger.error, etc. for structured logging
  */
 import { config } from '@/config';
+import { LIMITS } from '@/config/constants';
 import winston from 'winston';
 import fs from 'fs';
 import path from 'path';
@@ -72,13 +73,13 @@ export const logger = winston.createLogger({
           new winston.transports.File({
             filename: 'logs/error.log',
             level: 'error',
-            maxsize: 5242880, // 5MB
-            maxFiles: 5,
+            maxsize: LIMITS.LOG_FILE_SIZE,
+            maxFiles: LIMITS.LOG_FILE_COUNT,
           }),
           new winston.transports.File({
             filename: 'logs/combined.log',
-            maxsize: 5242880, // 5MB
-            maxFiles: 5,
+            maxsize: LIMITS.LOG_FILE_SIZE,
+            maxFiles: LIMITS.LOG_FILE_COUNT,
           }),
         ]
       : []),

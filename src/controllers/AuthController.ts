@@ -175,7 +175,8 @@ export class AuthController {
 
       if (!(hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChar)) {
         throw new Error(
-          'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
+          'Password must contain at least one uppercase letter, one lowercase letter, ' +
+            'one number, and one special character'
         );
       }
 

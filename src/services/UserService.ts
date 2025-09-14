@@ -9,6 +9,7 @@
  *   - Use authentication methods for login and token management
  */
 import { config } from '@/config';
+import { AppError } from '@/middleware/errorHandler';
 import type { User } from '@/types';
 import { logger } from '@/utils/logger';
 import bcrypt from 'bcrypt';
@@ -74,7 +75,7 @@ export class UserService {
       );
 
       if (existingUsers.length > 0) {
-        throw new Error('User with this email already exists');
+        throw new AppError('User with this email already exists', 409, 'USER_ALREADY_EXISTS');
       }
 
       // Hash password securely
@@ -129,7 +130,7 @@ export class UserService {
       );
 
       if (users.length === 0) {
-        throw new Error('Invalid email or password');
+        throw new AppError('Invalid email or password', 401, 'INVALID_CREDENTIALS');
       }
 
       const userData = users[0];
@@ -138,7 +139,7 @@ export class UserService {
       const isValidPassword = await bcrypt.compare(credentials.password, userData.password_hash);
 
       if (!isValidPassword) {
-        throw new Error('Invalid email or password');
+        throw new AppError('Invalid email or password', 401, 'INVALID_CREDENTIALS');
       }
 
       // Update last active timestamp
@@ -273,14 +274,14 @@ export class UserService {
       );
 
       if (users.length === 0) {
-        throw new Error('User not found');
+        throw new AppError('User not found', 404, 'USER_NOT_FOUND');
       }
 
       // Verify current password
       const isValidPassword = await bcrypt.compare(currentPassword, users[0].password_hash);
 
       if (!isValidPassword) {
-        throw new Error('Current password is incorrect');
+        throw new AppError('Current password is incorrect', 401, 'INVALID_CURRENT_PASSWORD');
       }
 
       // Hash new password
@@ -345,7 +346,7 @@ export class UserService {
       return jwt.verify(token, config.jwtSecret);
     } catch (error) {
       logger.error('Token verification failed:', error);
-      throw new Error('Invalid or expired token');
+      throw new AppError('Invalid or expired token', 401, 'INVALID_TOKEN');
     }
   }
 

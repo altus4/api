@@ -2,6 +2,7 @@ import fs from 'fs';
 import type { Pool } from 'mysql2/promise';
 import { createPool } from 'mysql2/promise';
 import path from 'path';
+import { DATABASE_DEFAULTS, LIMITS, PORTS } from '@/config/constants';
 
 /**
  * Runtime flags parsed from CLI arguments.
@@ -209,7 +210,7 @@ function poolFromEnv(flags: Flags): Pool {
     try {
       const u = new URL(url);
       const host = u.hostname;
-      const port = Number(u.port || 3306);
+      const port = Number(u.port || PORTS.DEFAULT_MYSQL);
       const user = decodeURIComponent(u.username);
       const password = decodeURIComponent(u.password);
       const database = flags.database || u.pathname.replace(/^\//, '');
@@ -219,11 +220,11 @@ function poolFromEnv(flags: Flags): Pool {
         user,
         password,
         database,
-        waitForConnections: true,
-        connectionLimit: 5,
-        queueLimit: 0,
-        multipleStatements: true,
-        charset: 'utf8mb4_general_ci',
+        waitForConnections: DATABASE_DEFAULTS.WAIT_FOR_CONNECTIONS,
+        connectionLimit: LIMITS.CONNECTION_POOL_SIZE,
+        queueLimit: LIMITS.QUEUE_LIMIT,
+        multipleStatements: DATABASE_DEFAULTS.MULTIPLE_STATEMENTS,
+        charset: DATABASE_DEFAULTS.CHARSET,
       });
     } catch (e) {
       die(`Invalid database URL: ${String(e)}`);
@@ -233,7 +234,7 @@ function poolFromEnv(flags: Flags): Pool {
   // Socket or host-based connection
   const useSocket = !!process.env.DB_SOCKET;
   const host = process.env.DB_HOST || 'localhost';
-  const port = Number(process.env.DB_PORT || 3306);
+  const port = Number(process.env.DB_PORT || PORTS.DEFAULT_MYSQL);
   const user = process.env.DB_USERNAME || 'root';
   const password = process.env.DB_PASSWORD || undefined;
   const database = flags.database || process.env.DB_DATABASE || 'altus4';
@@ -245,11 +246,11 @@ function poolFromEnv(flags: Flags): Pool {
     password,
     database,
     socketPath: useSocket ? process.env.DB_SOCKET : undefined,
-    waitForConnections: true,
-    connectionLimit: 5,
-    queueLimit: 0,
-    multipleStatements: true,
-    charset: 'utf8mb4_general_ci',
+    waitForConnections: DATABASE_DEFAULTS.WAIT_FOR_CONNECTIONS,
+    connectionLimit: LIMITS.CONNECTION_POOL_SIZE,
+    queueLimit: LIMITS.QUEUE_LIMIT,
+    multipleStatements: DATABASE_DEFAULTS.MULTIPLE_STATEMENTS,
+    charset: DATABASE_DEFAULTS.CHARSET,
   });
 }
 
@@ -458,7 +459,9 @@ async function pickRollbackTargets(pool: Pool, flags: Flags): Promise<string[]> 
     return Array.isArray(rows) ? (rows as any[]).map(r => String(r.migration)) : [];
   }
   const [rows] = await pool.query(
-    `SELECT migration FROM \`${MIGRATIONS_TABLE}\` WHERE batch=(SELECT COALESCE(MAX(batch),0) FROM \`${MIGRATIONS_TABLE}\`) ORDER BY id DESC`
+    `SELECT migration FROM \`${MIGRATIONS_TABLE}\` 
+     WHERE batch=(SELECT COALESCE(MAX(batch),0) FROM \`${MIGRATIONS_TABLE}\`) 
+     ORDER BY id DESC`
   );
   return Array.isArray(rows) ? (rows as any[]).map(r => String(r.migration)) : [];
 }
