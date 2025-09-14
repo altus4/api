@@ -7,8 +7,8 @@
  * Usage:
  *   - Mount this router at /api/v1/databases in the main server
  */
-import { DatabaseController } from '@/controllers/DatabaseController';
 import { HTTP_STATUS } from '@/config/constants';
+import { DatabaseController } from '@/controllers/DatabaseController';
 import type { AuthenticatedRequest } from '@/middleware/auth';
 import { authenticate } from '@/middleware/auth';
 import { validateRequest } from '@/middleware/validation';
@@ -57,7 +57,7 @@ router.get('/', async (req: AuthenticatedRequest, res) => {
       meta: {
         timestamp: new Date(),
         requestId: req.get('X-Request-ID') || 'unknown',
-        version: process.env.npm_package_version || '0.3.0',
+        version: process.env.npm_package_version || '0.4.0',
       },
     };
 
@@ -90,7 +90,7 @@ router.post(
         meta: {
           timestamp: new Date(),
           requestId: req.get('X-Request-ID') || 'unknown',
-          version: process.env.npm_package_version || '0.3.0',
+          version: process.env.npm_package_version || '0.4.0',
         },
       };
 
@@ -122,7 +122,7 @@ router.get('/status', async (req: AuthenticatedRequest, res) => {
       meta: {
         timestamp: new Date(),
         requestId: req.get('X-Request-ID') || 'unknown',
-        version: process.env.npm_package_version || '0.3.0',
+        version: process.env.npm_package_version || '0.4.0',
       },
     };
 
@@ -165,7 +165,7 @@ router.get('/:connectionId', async (req: AuthenticatedRequest, res) => {
       meta: {
         timestamp: new Date(),
         requestId: req.get('X-Request-ID') || 'unknown',
-        version: process.env.npm_package_version || '0.3.0',
+        version: process.env.npm_package_version || '0.4.0',
       },
     };
 
@@ -212,7 +212,7 @@ router.put(
         meta: {
           timestamp: new Date(),
           requestId: req.get('X-Request-ID') || 'unknown',
-          version: process.env.npm_package_version || '0.3.0',
+          version: process.env.npm_package_version || '0.4.0',
         },
       };
 
@@ -256,7 +256,7 @@ router.delete('/:connectionId', async (req: AuthenticatedRequest, res) => {
       meta: {
         timestamp: new Date(),
         requestId: req.get('X-Request-ID') || 'unknown',
-        version: process.env.npm_package_version || '0.3.0',
+        version: process.env.npm_package_version || '0.4.0',
       },
     };
 
@@ -286,7 +286,7 @@ router.post('/:connectionId/test', async (req: AuthenticatedRequest, res) => {
       meta: {
         timestamp: new Date(),
         requestId: req.get('X-Request-ID') || 'unknown',
-        version: process.env.npm_package_version || '0.3.0',
+        version: process.env.npm_package_version || '0.4.0',
       },
     };
 
@@ -316,7 +316,7 @@ router.get('/:connectionId/schema', async (req: AuthenticatedRequest, res) => {
       meta: {
         timestamp: new Date(),
         requestId: req.get('X-Request-ID') || 'unknown',
-        version: process.env.npm_package_version || '0.3.0',
+        version: process.env.npm_package_version || '0.4.0',
       },
     };
 

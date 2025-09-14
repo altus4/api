@@ -7,8 +7,8 @@
  * Usage:
  *   - Mount this router at /api/v1/auth in the main server
  */
-import { AuthController } from '@/controllers/AuthController';
 import { HTTP_STATUS } from '@/config/constants';
+import { AuthController } from '@/controllers/AuthController';
 import type { AuthenticatedRequest } from '@/middleware/auth';
 import { authenticate } from '@/middleware/auth';
 import { validateRequest } from '@/middleware/validation';
@@ -57,7 +57,7 @@ router.post('/register', validateRequest({ body: registerSchema }), async (req, 
       meta: {
         timestamp: new Date(),
         requestId: req.get('X-Request-ID') || 'unknown',
-        version: process.env.npm_package_version || '0.3.0',
+        version: process.env.npm_package_version || '0.4.0',
       },
     };
 
@@ -87,7 +87,7 @@ router.post('/login', validateRequest({ body: loginSchema }), async (req, res) =
       meta: {
         timestamp: new Date(),
         requestId: req.get('X-Request-ID') || 'unknown',
-        version: process.env.npm_package_version || '0.3.0',
+        version: process.env.npm_package_version || '0.4.0',
       },
     };
 
@@ -127,7 +127,7 @@ router.get('/profile', authenticate, async (req: AuthenticatedRequest, res) => {
       meta: {
         timestamp: new Date(),
         requestId: req.get('X-Request-ID') || 'unknown',
-        version: process.env.npm_package_version || '0.3.0',
+        version: process.env.npm_package_version || '0.4.0',
       },
     };
 
@@ -171,7 +171,7 @@ router.put(
         meta: {
           timestamp: new Date(),
           requestId: req.get('X-Request-ID') || 'unknown',
-          version: process.env.npm_package_version || '0.3.0',
+          version: process.env.npm_package_version || '0.4.0',
         },
       };
 
@@ -206,7 +206,7 @@ router.post(
         meta: {
           timestamp: new Date(),
           requestId: req.get('X-Request-ID') || 'unknown',
-          version: process.env.npm_package_version || '0.3.0',
+          version: process.env.npm_package_version || '0.4.0',
         },
       };
 
@@ -250,7 +250,7 @@ router.post('/refresh', authenticate, async (req: AuthenticatedRequest, res) => 
       meta: {
         timestamp: new Date(),
         requestId: req.get('X-Request-ID') || 'unknown',
-        version: process.env.npm_package_version || '0.3.0',
+        version: process.env.npm_package_version || '0.4.0',
       },
     };
 
@@ -280,7 +280,7 @@ router.post('/logout', authenticate, async (req: AuthenticatedRequest, res) => {
       meta: {
         timestamp: new Date(),
         requestId: req.get('X-Request-ID') || 'unknown',
-        version: process.env.npm_package_version || '0.3.0',
+        version: process.env.npm_package_version || '0.4.0',
       },
     };
 
@@ -310,7 +310,7 @@ router.delete('/account', authenticate, async (req: AuthenticatedRequest, res) =
       meta: {
         timestamp: new Date(),
         requestId: req.get('X-Request-ID') || 'unknown',
-        version: process.env.npm_package_version || '0.3.0',
+        version: process.env.npm_package_version || '0.4.0',
       },
     };
 

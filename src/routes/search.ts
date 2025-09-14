@@ -8,8 +8,8 @@
  * Usage:
  *   - Mount this router at /api/v1/search in the main server
  */
-import { SearchController } from '@/controllers/SearchController';
 import { HTTP_STATUS } from '@/config/constants';
+import { SearchController } from '@/controllers/SearchController';
 import type { ApiKeyAuthenticatedRequest } from '@/middleware/apiKeyAuth';
 import { authenticateApiKey, requirePermission } from '@/middleware/apiKeyAuth';
 import { rateLimiter } from '@/middleware/rateLimiter';
@@ -72,7 +72,7 @@ router.post(
         meta: {
           timestamp: new Date(),
           requestId: req.get('X-Request-ID') || 'unknown',
-          version: process.env.npm_package_version || '0.3.0',
+          version: process.env.npm_package_version || '0.4.0',
           apiKeyTier: req.apiKey?.rateLimitTier,
         },
       };
@@ -113,7 +113,7 @@ router.get(
         meta: {
           timestamp: new Date(),
           requestId: req.get('X-Request-ID') || 'unknown',
-          version: process.env.npm_package_version || '0.3.0',
+          version: process.env.npm_package_version || '0.4.0',
           apiKeyTier: req.apiKey?.rateLimitTier,
         },
       };
@@ -153,7 +153,7 @@ router.post(
         meta: {
           timestamp: new Date(),
           requestId: req.get('X-Request-ID') || 'unknown',
-          version: process.env.npm_package_version || '0.3.0',
+          version: process.env.npm_package_version || '0.4.0',
           apiKeyTier: req.apiKey?.rateLimitTier,
         },
       };
@@ -188,7 +188,7 @@ router.get(
         meta: {
           timestamp: new Date(),
           requestId: req.get('X-Request-ID') || 'unknown',
-          version: process.env.npm_package_version || '0.3.0',
+          version: process.env.npm_package_version || '0.4.0',
           apiKeyTier: req.apiKey?.rateLimitTier,
         },
       };
@@ -226,7 +226,7 @@ router.get(
         meta: {
           timestamp: new Date(),
           requestId: req.get('X-Request-ID') || 'unknown',
-          version: process.env.npm_package_version || '0.3.0',
+          version: process.env.npm_package_version || '0.4.0',
           apiKeyTier: req.apiKey?.rateLimitTier,
         },
       };

@@ -430,7 +430,7 @@ Expected response:
 {
   "status": "healthy",
   "timestamp": "2024-01-15T10:30:00.000Z",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "uptime": 1234.567
 }
 ```

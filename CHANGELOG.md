@@ -7,28 +7,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [0.4.0] - 2025-09-14
+
 ### Added
 
-- JSDoc docblocks and inline comments for the migrations CLI (`src/cli/index.ts`) to improve developer understanding of flags, commands, and edge cases. This change is documentation-only and does not modify runtime behavior.
+#### **Node-based CLI System**
 
-### Quality
+- **Migration CLI** - Complete Node.js-based CLI for database migrations with comprehensive command support
+- **CLI Integration Tests** - Full test coverage for CLI commands and migration workflows
+- **Developer-friendly CLI** - Enhanced CLI with better error handling and user feedback
 
-- Verified TypeScript typecheck, ESLint linting, and Prettier formatting after the documentation updates (`npm run check`).
+#### **Heroku Deployment Support**
+
+- **Heroku Configuration** - Complete Heroku deployment support with environment variables and scripts
+- **Database Connection Utilities** - Enhanced database connection handling for cloud environments
+- **Production Optimizations** - Database configuration and logging setup optimized for production
+
+#### **Authentication System Enhancements**
+
+- **JWT Authentication** - Enhanced JWT-based authentication for analytics and database management routes
+- **Authentication Migration** - Updated authentication mechanism from API key to JWT for specific routes
+- **CORS Configuration** - Enhanced CORS configuration with updated allowed origins for development
+
+#### **Development Experience Improvements**
+
+- **JSON Error Handling** - Enhanced JSON parsing and error handling for invalid JSON requests
+- **Repository Guidelines** - Added comprehensive repository guidelines document
+- **Environment Variable Testing** - Comprehensive tests for environment variable validation and error handling
+- **Error Handling Tests** - Extensive error handling tests across config, analytics, database, AI service, and logger utilities
+
+### Fixed
+
+- **Database Integration Tests** - Resolved database integration test failures
+- **Password Field Consistency** - Updated password field handling in database queries and integration tests
+- **README Corrections** - Fixed repository links to point to correct API repository
+- **CI Workflow** - Updated CI workflow for unit tests and corrected performance test commands
+- **Dependency Management** - Fixed prepare script to handle missing husky installation and restored uuid dependency
+- **Release Commands** - Updated release command to run migration status instead of build
+- **SQL Query Optimization** - Updated SQL query in AnalyticsController to remove DISTINCT and group by query_text
 
 ### Changed
 
-- README: corrected repository path (`cd core`), prefer `npm ci`, and updated required npm version to 10+
-- README: standardized migration CLI usage to `./bin/altus` (deprecated `./bin/migrate` references removed)
-- README: fixed health checks section (removed non-existent `/health/db` and `/health/redis` endpoints; pointed to `/health`)
-- README: adjusted Docker notes to clarify no app Dockerfile is present; recommend `npm run dev:start|stop|reset` for local MySQL/Redis
-- README: updated link to CLI docs (`docs/cli.md`)
-- README: updated health response example version to `0.3.0`
-- Package metadata: set `license` to `Apache-2.0` to match LICENSE file
-- README: corrected authentication columns for `/api/v1/keys/*` and `/api/v1/databases/*` (require JWT for management endpoints)
+#### **Code Quality & Refactoring**
 
-### Housekeeping
+- **Response Status Codes** - Refactored response status codes to use centralized constants
+- **Logging Improvements** - Updated logging messages and improved readability across scripts
+- **Connection Status Updates** - Enhanced connection status handling and fallback search logging
+- **Migration Scripts** - Added migration scripts to adjust API keys key_prefix column length
 
-- Relabeled the later `0.3.0` entry as `0.3.1` to resolve duplication.
+#### **Documentation & Metadata**
+
+- **Version Updates** - Updated version number to 0.3.0 in middleware and routes
+- **Project Title** - Updated project title in README to include API reference
+- **CODEOWNERS** - Updated CODEOWNERS to assign ownership to @Thavarshan
+- **License** - Changed license to Apache-2.0 in package.json to match LICENSE file
+- **Documentation Exclusions** - Added 'docs/' to .gitignore to exclude documentation build outputs
 
 ---
 

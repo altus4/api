@@ -149,7 +149,7 @@ describe('ApiKeyController', () => {
         meta: {
           timestamp: expect.any(Date),
           requestId: 'unknown',
-          version: '0.3.0',
+          version: '0.4.0',
         },
       });
     });
@@ -263,7 +263,7 @@ describe('ApiKeyController', () => {
         meta: {
           timestamp: expect.any(Date),
           requestId: 'unknown',
-          version: '0.3.0',
+          version: '0.4.0',
         },
       });
     });
@@ -357,7 +357,7 @@ describe('ApiKeyController', () => {
         meta: {
           timestamp: expect.any(Date),
           requestId: 'unknown',
-          version: '0.3.0',
+          version: '0.4.0',
         },
       });
     });
@@ -456,7 +456,7 @@ describe('ApiKeyController', () => {
         meta: {
           timestamp: expect.any(Date),
           requestId: 'unknown',
-          version: '0.3.0',
+          version: '0.4.0',
         },
       });
     });
@@ -584,7 +584,7 @@ describe('ApiKeyController', () => {
         meta: {
           timestamp: expect.any(Date),
           requestId: 'unknown',
-          version: '0.3.0',
+          version: '0.4.0',
         },
       });
     });
@@ -674,7 +674,7 @@ describe('ApiKeyController', () => {
         meta: {
           timestamp: expect.any(Date),
           requestId: 'unknown',
-          version: '0.3.0',
+          version: '0.4.0',
         },
       });
     });

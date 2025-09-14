@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Altus4 Core API
-  version: 0.3.0
+  version: 0.4.0
   description: |
     Complete API specification for Altus4 - AI-Enhanced MySQL Full-Text Search Engine.
 
@@ -475,7 +475,7 @@ paths:
                     format: date-time
                   version:
                     type: string
-                    example: '0.3.0'
+                    example: '0.4.0'
                   uptime:
                     type: number
 

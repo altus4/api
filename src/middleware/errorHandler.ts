@@ -63,7 +63,7 @@ export const errorHandler = (
       meta: {
         timestamp: new Date(),
         requestId: req.get('X-Request-ID') || 'unknown',
-        version: process.env.npm_package_version || '0.3.0',
+        version: process.env.npm_package_version || '0.4.0',
       },
     };
 
@@ -140,7 +140,7 @@ export const errorHandler = (
     meta: {
       timestamp: new Date(),
       requestId: req.get('X-Request-ID') || 'unknown',
-      version: process.env.npm_package_version || '0.3.0',
+      version: process.env.npm_package_version || '0.4.0',
     },
   };
 
