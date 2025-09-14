@@ -143,10 +143,11 @@ export class DatabaseController {
     connectionData: Omit<DatabaseConnection, 'id' | 'createdAt' | 'updatedAt' | 'isActive'>
   ): Promise<DatabaseConnectionResponse> {
     try {
+      const conn = await this.connection;
+
       // First test the connection
       await this.testConnectionData(connectionData);
 
-      const conn = await this.connection;
       const connectionId = uuidv4();
       const now = new Date();
 

@@ -15,6 +15,7 @@ describe('Database Integration (SuperTest)', () => {
       .post('/api/v1/auth/register')
       .send({ email: user.email, name: user.name, password: user.password, role })
       .expect(201);
+
     const jwtToken = res.body.data.token as string;
 
     return jwtToken;
@@ -44,6 +45,7 @@ describe('Database Integration (SuperTest)', () => {
         .get('/api/v1/databases')
         .set('Authorization', `Bearer ${jwtToken}`)
         .expect(200);
+
       expect(listRes.body.success).toBe(true);
       const listed = listRes.body.data.find((c: any) => c.id === id);
       expect(listed).toBeTruthy();
